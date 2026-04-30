@@ -1,7 +1,7 @@
 //
 //  OSCTCPServer ClientConnection.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -20,7 +20,7 @@ extension OSCTCPServer {
         let tcpDelegate: OSCTCPClientDelegate
         let tcpSocketTag: Int
         let framingMode: OSCTCPFramingMode
-        
+
         init(
             tcpSocket: GCDAsyncSocket,
             tcpSocketTag: Int,
@@ -33,11 +33,11 @@ extension OSCTCPServer {
             self.tcpSocketTag = tcpSocketTag
             self.framingMode = framingMode
             self.delegate = delegate
-            
+
             tcpDelegate = OSCTCPClientDelegate()
             tcpDelegate.oscServer = self
         }
-        
+
         deinit {
             close()
         }
@@ -61,11 +61,11 @@ extension OSCTCPServer.ClientConnection: _OSCTCPSendProtocol {
     func send(_ oscPacket: OSCPacket) throws {
         try _send(oscPacket, tag: tcpSocketTag)
     }
-    
+
     func send(_ oscBundle: OSCBundle) throws {
         try _send(oscBundle, tag: tcpSocketTag)
     }
-    
+
     func send(_ oscMessage: OSCMessage) throws {
         try _send(oscMessage, tag: tcpSocketTag)
     }
@@ -75,11 +75,11 @@ extension OSCTCPServer.ClientConnection: _OSCTCPHandlerProtocol {
     var queue: DispatchQueue {
         tcpSocket.delegateQueue ?? .global()
     }
-    
+
     var timeTagMode: OSCTimeTagMode {
         delegate?.oscServer?.timeTagMode ?? .ignore
     }
-    
+
     var receiveHandler: OSCHandlerBlock? {
         delegate?.oscServer?.receiveHandler
     }
@@ -96,7 +96,7 @@ extension OSCTCPServer.ClientConnection: _OSCTCPGeneratesClientNotificationsProt
             clientID: tcpSocketTag
         )
     }
-    
+
     // note that this is never called because when a remote connection closes, its socket does not fire
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements

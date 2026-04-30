@@ -1,7 +1,7 @@
 //
 //  OSCTCPSendProtocol.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -26,7 +26,7 @@ extension _OSCTCPSendProtocol {
     func _send(_ oscPacket: OSCPacket, tag: OSCTCPClientSessionID) throws {
         try _send(oscPacket.rawData(), tag: tag)
     }
-    
+
     /// Send an OSC bundle.
     ///
     /// - Parameters:
@@ -36,7 +36,7 @@ extension _OSCTCPSendProtocol {
     func _send(_ oscBundle: OSCBundle, tag: OSCTCPClientSessionID) throws {
         try _send(oscBundle.rawData(), tag: tag)
     }
-    
+
     /// Send an OSC message.
     ///
     /// - Parameters:
@@ -46,7 +46,7 @@ extension _OSCTCPSendProtocol {
     func _send(_ oscMessage: OSCMessage, tag: OSCTCPClientSessionID) throws {
         try _send(oscMessage.rawData(), tag: tag)
     }
-    
+
     /// Send an OSC packet.
     ///
     /// - Parameters:
@@ -60,23 +60,23 @@ extension _OSCTCPSendProtocol {
         //         userInfo: ["Reason": "OSC TCP client socket is not connected to a remote host."]
         //     )
         // }
-        
+
         // frame data
         let data: Data = switch framingMode {
         case .osc1_0:
             // OSC packet framed using a packet-length header
             // 4-byte int for size
             oscData.packetLengthHeaderEncoded(byteOrder: .bigEndian)
-            
+
         case .osc1_1:
             // OSC packet framed using SLIP (double END) protocol: http://www.rfc-editor.org/rfc/rfc1055.txt
             oscData.slipEncoded()
-            
+
         case .none:
             // no framing, send OSC bytes as-is
             oscData
         }
-        
+
         // send packet
         tcpSocket.write(data, withTimeout: -1, tag: tag)
     }

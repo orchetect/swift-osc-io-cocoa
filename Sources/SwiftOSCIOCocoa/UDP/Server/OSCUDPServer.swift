@@ -1,7 +1,7 @@
 //
 //  OSCUDPServer.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -20,10 +20,10 @@ public final class OSCUDPServer {
     let udpDelegate = OSCUDPServerDelegate()
     let queue: DispatchQueue
     var receiveHandler: OSCHandlerBlock?
-    
+
     /// Time tag mode. Determines how OSC bundle time tags are handled.
     public var timeTagMode: OSCTimeTagMode
-    
+
     /// UDP port used by the OSC server to listen for inbound OSC packets.
     /// This may only be set at the time of initialization.
     public var localPort: UInt16 {
@@ -31,10 +31,10 @@ public final class OSCUDPServer {
     }
 
     private var _localPort: UInt16?
-    
+
     /// Network interface to restrict connections to.
     public private(set) var interface: String?
-    
+
     /// Enable local UDP port reuse by other processes.
     /// This property must be set prior to calling ``start()`` in order to take effect.
     ///
@@ -47,10 +47,10 @@ public final class OSCUDPServer {
     /// or multicast messages for any additional sockets which bind to the same address and port. Unicast
     /// messages are only received by the first socket to bind.
     public var isPortReuseEnabled: Bool = false
-    
+
     /// Returns a boolean indicating whether the OSC server has been started.
     public private(set) var isStarted: Bool = false
-    
+
     /// Initialize an OSC server.
     ///
     /// The default port for OSC communication is 8000 but may change depending on device/software
@@ -84,7 +84,7 @@ public final class OSCUDPServer {
         let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCUDPServer.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
-        
+
         udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: queue, socketQueue: nil)
         udpDelegate.oscServer = self
     }
@@ -98,23 +98,23 @@ extension OSCUDPServer {
     /// Bind the local UDP port and begin listening for OSC packets.
     public func start() throws {
         guard !isStarted else { return }
-        
+
         stop()
-        
+
         try udpSocket.enableReusePort(isPortReuseEnabled)
         try udpSocket.bind(
             toPort: _localPort ?? 0, // 0 causes system to assign random open port
             interface: interface
         )
         try udpSocket.beginReceiving()
-        
+
         isStarted = true
     }
-    
+
     /// Stops listening for data and closes the OSC server port.
     public func stop() {
         udpSocket.close()
-        
+
         isStarted = false
     }
 }

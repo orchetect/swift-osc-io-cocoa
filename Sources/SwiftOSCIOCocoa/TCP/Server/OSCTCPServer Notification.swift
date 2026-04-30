@@ -1,7 +1,7 @@
 //
 //  OSCTCPServer Notification.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -13,7 +13,7 @@ extension OSCTCPServer {
     public enum Notification {
         /// The server accepted a connection from a remote client.
         case connected(remoteHost: String, remotePort: UInt16, clientID: OSCTCPClientSessionID)
-        
+
         /// The server was notified that a remote client connection has closed.
         /// If the disconnection was a result of an error, the error will be non-nil.
         case disconnected(remoteHost: String, remotePort: UInt16, clientID: OSCTCPClientSessionID, error: GCDAsyncSocketError?)
@@ -21,9 +21,9 @@ extension OSCTCPServer {
 }
 
 extension OSCTCPServer.Notification: Equatable { }
-    
+
 extension OSCTCPServer.Notification: Hashable { }
-    
+
 extension OSCTCPServer.Notification: Sendable { }
 
 #endif

@@ -1,7 +1,7 @@
 //
 //  OSCUDPServerDelegate.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -12,7 +12,7 @@ import Foundation
 /// Internal UDP receiver class so as to not expose `GCDAsyncUdpSocketDelegate` methods as public.
 final class OSCUDPServerDelegate: NSObject {
     weak var oscServer: (any _OSCHandlerProtocol)?
-    
+
     init(oscServer: (any _OSCHandlerProtocol)? = nil) {
         self.oscServer = oscServer
     }
@@ -27,11 +27,11 @@ extension OSCUDPServerDelegate: GCDAsyncUdpSocketDelegate {
         withFilterContext filterContext: Any?
     ) {
         guard let oscServer else { return }
-        
+
         var remoteHost: NSString? = nil
         var remotePort: UInt16 = 0
         _ = GCDAsyncUdpSocket.getHost(&remoteHost, port: &remotePort, fromAddress: address)
-        
+
         _handle(
             oscServer: oscServer,
             data: data,
@@ -39,7 +39,7 @@ extension OSCUDPServerDelegate: GCDAsyncUdpSocketDelegate {
             remotePort: remotePort
         )
     }
-    
+
     /// Stub required to take `oscServer` as sending.
     private func _handle(
         oscServer: any _OSCHandlerProtocol,

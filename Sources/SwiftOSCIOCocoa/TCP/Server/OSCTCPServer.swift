@@ -1,7 +1,7 @@
 //
 //  OSCTCPServer.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -28,26 +28,26 @@ public final class OSCTCPServer {
     let queue: DispatchQueue
     var receiveHandler: OSCHandlerBlock?
     var notificationHandler: NotificationHandlerBlock?
-    
+
     /// Notification handler closure.
     public typealias NotificationHandlerBlock = @Sendable (_ notification: Notification) -> Void
-    
+
     /// Time tag mode. Determines how OSC bundle time tags are handled.
     public var timeTagMode: OSCTimeTagMode
-    
+
     /// Local network port.
     public var localPort: UInt16 {
         tcpSocket.localPort
     }
 
     private var _localPort: UInt16?
-    
+
     /// Network interface to restrict connections to.
     public let interface: String?
-    
+
     /// Returns a boolean indicating whether the OSC server has been started.
     public private(set) var isStarted: Bool = false
-    
+
     /// TCP packet framing mode.
     public let framingMode: OSCTCPFramingMode
 
@@ -82,12 +82,12 @@ public final class OSCTCPServer {
         let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCTCPServer.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
-        
+
         tcpDelegate = OSCTCPServerDelegate(framingMode: framingMode)
         tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
         tcpDelegate.oscServer = self
     }
-    
+
     deinit {
         stop()
     }
@@ -101,23 +101,23 @@ extension OSCTCPServer {
     /// Starts listening for inbound connections.
     public func start() throws {
         guard !isStarted else { return }
-        
+
         try tcpSocket.accept(
             onInterface: interface,
             port: _localPort ?? 0 // 0 causes system to assign random open port
         )
-        
+
         isStarted = true
     }
-    
+
     /// Closes any open client connections and stops listening for inbound connection requests.
     public func stop() {
         // disconnect all clients
         tcpDelegate.closeClients()
-        
+
         // close server
         tcpSocket.disconnectAfterWriting()
-        
+
         isStarted = false
     }
 }
@@ -128,37 +128,37 @@ extension OSCTCPServer: _OSCTCPSendProtocol {
     /// Send an OSC bundle or message to all connected clients.
     public func send(_ oscPacket: OSCPacket) throws {
         let clientIDs = Array(tcpDelegate.clients.keys)
-        
+
         try send(oscPacket, toClientIDs: clientIDs)
     }
-    
+
     /// Send an OSC bundle to all connected clients.
     public func send(_ oscBundle: OSCBundle) throws {
         try send(.bundle(oscBundle))
     }
-    
+
     /// Send an OSC message to all connected clients.
     public func send(_ oscMessage: OSCMessage) throws {
         try send(.message(oscMessage))
     }
-    
+
     /// Send an OSC bundle or message to one or more connected clients.
     public func send(_ oscPacket: OSCPacket, toClientIDs clientIDs: [Int]) throws {
         for clientID in clientIDs {
             try _send(oscPacket, toClientID: clientID)
         }
     }
-    
+
     /// Send an OSC bundle to one or more connected clients.
     public func send(_ oscBundle: OSCBundle, toClientIDs clientIDs: [Int]) throws {
         try send(.bundle(oscBundle), toClientIDs: clientIDs)
     }
-    
+
     /// Send an OSC message to one or more connected clients.
     public func send(_ oscMessage: OSCMessage, toClientIDs clientIDs: [Int]) throws {
         try send(.message(oscMessage), toClientIDs: clientIDs)
     }
-    
+
     /// Send an OSC bundle or message to an individual connected client.
     func _send(_ oscPacket: OSCPacket, toClientID clientID: Int) throws {
         guard let connection = tcpDelegate.clients[clientID] else {
@@ -167,15 +167,15 @@ extension OSCTCPServer: _OSCTCPSendProtocol {
                 userInfo: ["Reason": "OSC TCP client socket with ID \(clientID) not found (not connected)."]
             )
         }
-        
+
         try connection.send(oscPacket)
     }
-    
+
     /// Send an OSC bundle to an individual connected client.
     func _send(_ oscBundle: OSCBundle, toClientID clientID: Int) throws {
         try _send(.bundle(oscBundle), toClientID: clientID)
     }
-    
+
     /// Send an OSC message to an individual connected client.
     func _send(_ oscMessage: OSCMessage, toClientID clientID: Int) throws {
         try _send(.message(oscMessage), toClientID: clientID)
@@ -191,7 +191,7 @@ extension OSCTCPServer: _OSCTCPGeneratesServerNotificationsProtocol {
         let notif: Notification = .connected(remoteHost: remoteHost, remotePort: remotePort, clientID: clientID)
         notificationHandler?(notif)
     }
-    
+
     func _generateDisconnectedNotification(
         remoteHost: String,
         remotePort: UInt16,
@@ -215,7 +215,7 @@ extension OSCTCPServer {
             self.receiveHandler = handler
         }
     }
-    
+
     /// Set the notification handler closure.
     /// This closure will be called when a notification is generated, such as connection and disconnection events.
     public func setNotificationHandler(
@@ -225,7 +225,7 @@ extension OSCTCPServer {
             self.notificationHandler = handler
         }
     }
-    
+
     /// Returns a dictionary of currently connected clients keyed by client session ID.
     ///
     /// > Note:
@@ -242,7 +242,7 @@ extension OSCTCPServer {
                 )
             }
     }
-    
+
     /// Disconnect a connected client from the server.
     public func disconnectClient(clientID: OSCTCPClientSessionID) {
         tcpDelegate.closeClient(clientID: clientID)

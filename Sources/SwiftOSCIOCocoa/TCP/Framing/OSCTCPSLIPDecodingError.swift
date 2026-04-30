@@ -1,7 +1,7 @@
 //
 //  OSCTCPSLIPDecodingError.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin)
@@ -14,7 +14,7 @@ import protocol Foundation.LocalizedError
 public enum OSCTCPSLIPDecodingError: LocalizedError, Equatable, Hashable {
     case doubleEscapeBytes
     case missingEscapedCharacter
-    
+
     public var errorDescription: String? {
         switch self {
         case .doubleEscapeBytes:

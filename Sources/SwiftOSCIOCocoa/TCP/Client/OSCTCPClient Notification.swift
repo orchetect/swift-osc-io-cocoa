@@ -1,7 +1,7 @@
 //
 //  OSCTCPClient Notification.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -13,7 +13,7 @@ extension OSCTCPClient {
     public enum Notification {
         /// The client successfully connected to the remote server.
         case connected
-        
+
         /// The client was disconnected from the remote server.
         /// If the disconnection was a result of an error, the error will be non-nil.
         case disconnected(error: GCDAsyncSocketError?)
@@ -21,9 +21,9 @@ extension OSCTCPClient {
 }
 
 extension OSCTCPClient.Notification: Equatable { }
-    
+
 extension OSCTCPClient.Notification: Hashable { }
-    
+
 extension OSCTCPClient.Notification: Sendable { }
 
 #endif

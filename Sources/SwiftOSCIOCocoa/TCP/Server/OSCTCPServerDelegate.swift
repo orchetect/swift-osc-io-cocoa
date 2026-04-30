@@ -1,7 +1,7 @@
 //
 //  OSCTCPServerDelegate.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -13,14 +13,14 @@ import Foundation
 final class OSCTCPServerDelegate: NSObject {
     weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesServerNotificationsProtocol)?
     let framingMode: OSCTCPFramingMode
-    
+
     /// Currently connected client sessions.
     var clients: [OSCTCPClientSessionID: OSCTCPServer.ClientConnection] = [:]
-    
+
     init(framingMode: OSCTCPFramingMode) {
         self.framingMode = framingMode
     }
-    
+
     deinit {
         closeClients()
     }
@@ -32,7 +32,7 @@ extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
     func newSocketQueueForConnection(fromAddress address: Data, on sock: GCDAsyncSocket) -> dispatch_queue_t? {
         oscServer?.queue
     }
-    
+
     func socket(_ sock: GCDAsyncSocket, didAcceptNewSocket newSocket: GCDAsyncSocket) {
         // add new connection to connections dictionary
         let clientID = newClientID()
@@ -44,30 +44,30 @@ extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
         )
         clients[clientID] = newConnection
         newSocket.delegate = self
-        
+
         // send notification
         oscServer?._generateConnectedNotification(
             remoteHost: newSocket.connectedHost ?? "",
             remotePort: newSocket.connectedPort,
             clientID: clientID
         )
-        
+
         // read initial data
         newSocket.readData(withTimeout: -1, tag: clientID)
     }
-    
+
     func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
         defer {
             // request socket to continue reading data
             sock.readData(withTimeout: -1, tag: tag)
         }
-        
+
         oscServer?._handle(receivedData: data, on: sock, tag: tag)
     }
-    
+
     func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: (any Error)?) {
         // remove connection from connections dictionary
-        
+
         // in almost all cases, this should only return one client,
         // however for sake of over-engineering, we'll remove all matches
         let disconnectedClients: [(clientID: Int, host: String, port: UInt16)] = clients
@@ -79,12 +79,12 @@ extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
                     port: $0.value.remotePort
                 )
             }
-        
+
         for (clientID, _, _) in disconnectedClients {
             clients[clientID]?.delegate = nil
             clients[clientID] = nil
         }
-        
+
         // errors should only ever be of type `GCDAsyncSocketError`
         var error = err as? GCDAsyncSocketError
         // CocoaAsyncSocket populates `err` with GCDAsyncSocketError.closedError
@@ -93,7 +93,7 @@ extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
         if error?.code == GCDAsyncSocketError.closedError {
             error = nil
         }
-        
+
         // send notification
         // note that sock.connectedHost will be nil, and sock.connectedPort will be 0
         // so we need to grab host/port from the local clients info
@@ -117,7 +117,7 @@ extension OSCTCPServerDelegate {
             closeClient(clientID: clientID)
         }
     }
-    
+
     /// Close a connection and remove it from the list of connected clients.
     func closeClient(clientID: Int) {
         clients[clientID]?.close()
