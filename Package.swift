@@ -10,13 +10,15 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/orchetect/swift-osc-core", branch: "main"), // TODO: from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1")
+        .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
+        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0")
     ],
     targets: [
         .target(
             name: "SwiftOSCIOCocoa",
             dependencies: [
-                .product(name: "SwiftOSCCore", package: "swift-osc-core")
+                .product(name: "SwiftOSCCore", package: "swift-osc-core"),
+                "CocoaAsyncSocket"
             ],
             swiftSettings: [.define("DEBUG", .when(configuration: .debug))]
         ),
