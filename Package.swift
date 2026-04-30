@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "swift-osc-io-cocoa",
-    platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6)],
+    platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13)],
     products: [
         .library(name: "SwiftOSCIOCocoa", targets: ["SwiftOSCIOCocoa"])
     ],
@@ -19,7 +19,11 @@ let package = Package(
             name: "SwiftOSCIOCocoa",
             dependencies: [
                 .product(name: "SwiftOSCCore", package: "swift-osc-core"),
-                "CocoaAsyncSocket"
+                .product(
+                    name: "CocoaAsyncSocket",
+                    package: "CocoaAsyncSocket",
+                    condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .visionOS, .driverKit])
+                )
             ],
             swiftSettings: [.define("DEBUG", .when(configuration: .debug))]
         ),
