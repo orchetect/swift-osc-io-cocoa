@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "SwiftOSCIOCocoa", targets: ["SwiftOSCIOCocoa"])
     ],
     dependencies: [
-        .package(url: "https://github.com/orchetect/swift-osc-core", branch: "main"), // TODO: from: "1.0.0"),
+        .package(url: "https://github.com/orchetect/swift-osc-core", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0"),
         .package(url: "https://github.com/orchetect/swift-testing-extensions", from: "0.3.0")
