@@ -1,4 +1,4 @@
-# ``OSCKit/OSCTCPClient``
+# ``SwiftOSCIOCocoa/OSCTCPClient``
 
 ### Setup
 
@@ -37,7 +37,7 @@ Once connected, messages may be sent and received bidirectionally between the cl
 
 > Important:
 >
-> By default, OSCKit TCP classes use the OSC 1.1 SLIP packet framing mode.
+> By default, SwiftOSC TCP classes use the OSC 1.1 SLIP packet framing mode.
 > However, since there are two common framing modes used pervasively by hardware and software manufacturers,
 > it is best practise to default to the latest (OSC 1.1 / SLIP) but provide the user the ability to select
 > between the two in your application's user settings/preferences UI to maximize compatibility.

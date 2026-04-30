@@ -1,4 +1,4 @@
-# ``OSCKit/OSCUDPClient``
+# ``SwiftOSCIOCocoa/OSCUDPClient``
 
 ### Setup
 

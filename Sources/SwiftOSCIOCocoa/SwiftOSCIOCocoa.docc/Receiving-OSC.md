@@ -4,7 +4,7 @@ Receiving OSC messages and bundles.
 
 ## Overview
 
-OSCKit offers a set of classes for both UDP and TCP network communication.
+SwiftOSC offers a set of classes for both UDP and TCP network communication.
 
 ## UDP
 
@@ -60,8 +60,3 @@ For a server, bind to the local network port and begin listening for inbound con
 ```swift
 try oscServer.start()
 ```
-
-## Topics
-
-- <doc://OSCKit/OSCKitCore/OSC-Address-Pattern-Parsing>
-- <doc://OSCKit/OSCKitCore/OSC-Value-Parsing>

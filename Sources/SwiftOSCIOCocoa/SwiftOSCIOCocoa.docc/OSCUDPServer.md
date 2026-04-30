@@ -1,4 +1,4 @@
-# ``OSCKit/OSCUDPServer``
+# ``SwiftOSCIOCocoa/OSCUDPServer``
 
 ### Setup
 

@@ -1,4 +1,4 @@
-# ``OSCKit/OSCUDPSocket``
+# ``SwiftOSCIOCocoa/OSCUDPSocket``
 
 ### Setup
 

@@ -1,26 +1,17 @@
-# ``OSCKit``
+# ``SwiftOSCIOCocoa``
 
-Adds network I/O layer on top of OSCKitCore. Contains a Getting Started guide.
+Adds network I/O layer for Apple platforms on top of SwiftOSCCore.
 
 ## Overview
 
-![OSCKit](osckit-banner.png)
+![SwiftOSC I/O: Cocoa](swift-osc-io-cocoa-banner.png)
 
 - OSC address pattern matching and dispatch
 - Convenient OSC message value type masking, validation and strong-typing
-- Modular: use the provided UDP or TCP network layer by default, or use your own
 - Support for custom OSC types
 - Supports Swift 6 Concurrency
 - Fully unit tested
 - Full DocC documentation
-
-@Comment {
-    // -------------------------------------------------------------------
-    // NOTE: The following is identical between the OSCKit and OSCKitCore
-    // docc bundles, except that the OSCKit docc adds 'Welcome' and 'I/O'
-    // topic sections at the top of the Topics list.
-    // -------------------------------------------------------------------
-}
 
 ## Topics
 
