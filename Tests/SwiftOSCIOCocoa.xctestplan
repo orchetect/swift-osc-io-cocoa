@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "E07DC211-C9B9-4DDF-89B6-CAC1F78652C7",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SwiftOSCIOCocoaTests",
+        "name" : "SwiftOSCIOCocoaTests"
+      }
+    }
+  ],
+  "version" : 1
+}
