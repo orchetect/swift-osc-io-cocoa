@@ -1,6 +1,6 @@
 # SwiftOSC I/O Examples
 
-These example projects are provided to demonstrate using SwiftOSC on Apple platforms.
+These example projects are provided to demonstrate using SwiftOSC I/O on Apple platforms.
 
 They will build for all platforms including macOS, iOS, tvOS and visionOS, and can be run in device simulators.
 
