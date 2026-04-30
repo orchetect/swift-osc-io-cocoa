@@ -12,7 +12,7 @@ Getting started with using SwiftOSC in your application.
 
 ## Value Types
 
-- For documentation on value types, see the **SwiftOSCCore** package documentation.
+- See [OSC Value Types](https://swiftpackageindex.com/orchetect/swift-osc-core/main/documentation/swiftosccore/osc-value-types) in the SwiftOSCCore package documentation.
 
 ## Sending and Receiving
 
