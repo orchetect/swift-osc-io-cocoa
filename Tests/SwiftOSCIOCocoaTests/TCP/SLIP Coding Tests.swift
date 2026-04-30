@@ -10,7 +10,7 @@ import struct Foundation.Data
 import struct FoundationEssentials.Data
 #endif
 
-@testable import OSCKit
+@testable import SwiftOSCIOCocoa
 import Testing
 
 @Suite struct SLIPCodingTests {
@@ -186,7 +186,8 @@ import Testing
     func allByteValuesSlipEncodeDecode() throws {
         for value in UInt8(0) ... UInt8(255) {
             let valueByte = Data([value])
-            let byteDescription = "Byte \(value.hexString(prefix: true))"
+            let hex = "0x" + ("00" + String(value, radix: 16, uppercase: true)).suffix(2)
+            let byteDescription = "Byte \(hex)"
             let encoded = valueByte.slipEncoded()
             do {
                 let decoded = try encoded.slipDecoded()

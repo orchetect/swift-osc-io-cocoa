@@ -11,7 +11,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/orchetect/swift-osc-core", branch: "main"), // TODO: from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
-        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0")
+        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0"),
+        .package(url: "https://github.com/orchetect/swift-testing-extensions", from: "0.3.0")
     ],
     targets: [
         .target(
@@ -26,7 +27,8 @@ let package = Package(
             name: "SwiftOSCIOCocoaTests",
             dependencies: [
                 "SwiftOSCIOCocoa",
-                .product(name: "Numerics", package: "swift-numerics")
+                .product(name: "Numerics", package: "swift-numerics"),
+                .product(name: "TestingExtensions", package: "swift-testing-extensions")
             ]
         )
     ]

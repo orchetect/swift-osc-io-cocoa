@@ -6,7 +6,7 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@testable import OSCKit
+@testable import SwiftOSCIOCocoa
 import Testing
 
 @Suite struct OSCTimeTag_OSC1_1_Tests {

@@ -10,7 +10,7 @@ import struct Foundation.Data
 import struct FoundationEssentials.Data
 #endif
 
-@testable import OSCKit
+@testable import SwiftOSCIOCocoa
 import Testing
 
 @Suite struct PacketLengthHeaderCodingTests {

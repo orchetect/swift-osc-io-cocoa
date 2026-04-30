@@ -7,8 +7,9 @@
 #if canImport(Darwin) && !os(watchOS)
 
 import Foundation
-@testable import OSCKit
+@testable import SwiftOSCIOCocoa
 import Testing
+import TestingExtensions
 
 @Suite(.enabled(if: isSystemTimingStable()), .serialized)
 struct OSCUDPSocket_Tests {

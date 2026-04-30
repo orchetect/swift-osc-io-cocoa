@@ -6,7 +6,7 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@testable import OSCKit
+@testable import SwiftOSCIOCocoa
 import Testing
 
 /// No functionality tests, just test that API compiles as expected.
