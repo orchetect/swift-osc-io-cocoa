@@ -3,3 +3,5 @@ builder:
   configs:
     - documentation_targets: [SwiftOSCIOCocoa]
       scheme: swift-osc-io-cocoa
+    - platform: watchOS
+      scheme: NOT-SUPPORTED
