@@ -6,12 +6,7 @@ Adds network I/O layer for Apple platforms on top of SwiftOSCCore.
 
 ![SwiftOSC I/O: Cocoa](swift-osc-io-cocoa-banner.png)
 
-- OSC address pattern matching and dispatch
-- Convenient OSC message value type masking, validation and strong-typing
-- Support for custom OSC types
-- Supports Swift 6 Concurrency
-- Fully unit tested
-- Full DocC documentation
+This I/O extension is provided for those who prefer to use CocoaAsyncSocket as a network sockets backend.
 
 ## Topics
 
