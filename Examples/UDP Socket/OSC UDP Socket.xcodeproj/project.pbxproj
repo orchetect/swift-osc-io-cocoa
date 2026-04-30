@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		E22C843D2CA8C12400FA3C54 /* OSCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22C843C2CA8C12300FA3C54 /* OSCManager.swift */; };
+		E294B3812FA32E4600FE13DD /* SwiftOSCIOCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = E294B3802FA32E4600FE13DD /* SwiftOSCIOCocoa */; };
 		E2A34EB72CD1FA2C00950E78 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A34EB62CD1FA2B00950E78 /* ContentView.swift */; };
-		E2CE6F112CCF252100F81BCE /* OSCKit in Frameworks */ = {isa = PBXBuildFile; productRef = E2CE6F102CCF252100F81BCE /* OSCKit */; };
 		E2D003D5289882820073ED8F /* OSCUDPSocketApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2D003D4289882820073ED8F /* OSCUDPSocketApp.swift */; };
 		E2D003E82898834E0073ED8F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2D003E52898834E0073ED8F /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -28,7 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2CE6F112CCF252100F81BCE /* OSCKit in Frameworks */,
+				E294B3812FA32E4600FE13DD /* SwiftOSCIOCocoa in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,9 +88,9 @@
 			);
 			name = "OSC UDP Socket";
 			packageProductDependencies = (
-				E2CE6F102CCF252100F81BCE /* OSCKit */,
+				E294B3802FA32E4600FE13DD /* SwiftOSCIOCocoa */,
 			);
-			productName = OSCKitSocketExample;
+			productName = SwiftOSCSocketExample;
 			productReference = E2D003D1289882820073ED8F /* OSC UDP Socket.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -119,7 +119,7 @@
 			);
 			mainGroup = E2D003C8289882820073ED8F;
 			packageReferences = (
-				E2CE6F0F2CCF252100F81BCE /* XCLocalSwiftPackageReference "../../" */,
+				E294B37F2FA32E4600FE13DD /* XCLocalSwiftPackageReference "../../" */,
 			);
 			productRefGroup = E2D003D2289882820073ED8F /* Products */;
 			projectDirPath = "";
@@ -308,7 +308,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.orchetect.OSCKit.OSCUDPSocket${DEVELOPMENT_TEAM}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.orchetect.swift-osc.OSCUDPSocket${DEVELOPMENT_TEAM}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -341,7 +341,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.orchetect.OSCKit.OSCUDPSocket${DEVELOPMENT_TEAM}";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.orchetect.swift-osc.OSCUDPSocket${DEVELOPMENT_TEAM}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -374,16 +374,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		E2CE6F0F2CCF252100F81BCE /* XCLocalSwiftPackageReference "../../" */ = {
+		E294B37F2FA32E4600FE13DD /* XCLocalSwiftPackageReference "../../" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../;
+			relativePath = "../../";
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E2CE6F102CCF252100F81BCE /* OSCKit */ = {
+		E294B3802FA32E4600FE13DD /* SwiftOSCIOCocoa */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = OSCKit;
+			productName = SwiftOSCIOCocoa;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
