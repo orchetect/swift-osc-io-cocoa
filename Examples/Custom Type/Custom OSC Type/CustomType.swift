@@ -1,7 +1,7 @@
 //
 //  CustomType.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
@@ -33,7 +33,7 @@ extension CustomType: OSCValueCodable {
     // uses an OSC Type Tag that already exists.
     // For a reference of existing OSC Type Tags, see the OSC 1.0 spec online.
     static let oscTag: Character = "j"
-    
+
     // establishes that the tag is static and will never change based on its data payload
     static let oscTagIdentity: OSCValueTagIdentity = .tag(oscTag)
 }
@@ -45,7 +45,7 @@ extension CustomType: OSCValueEncodable {
         let jsonData: Data
         do { jsonData = try encoder.encode(value) }
         catch { throw .valueEncodingError(error.localizedDescription) }
-        
+
         // OSCValueEncodingBlock makes it our responsibility to make sure OSB blob (data) is encoded correctly,
         // including a 4-byte big-endian Int32 length header and trailing null-byte padding to an alignment of 4 bytes.
         // We can ask the Data (blob) encoder to do the work for us:
@@ -57,11 +57,11 @@ extension CustomType: OSCValueEncodable {
 extension CustomType: OSCValueDecodable {
     static let oscDecoding = OSCValueStaticTagDecoder<Self> { dataReader throws(OSCDecodeError) in
         let decoder = JSONDecoder()
-        
+
         // Gets entire data chunk from the OSC blob, stripping the length bytes and null padding suffix
         // and returning the actual data content
         let data = try dataReader.readOSCBlob()
-        
+
         // Decode into a new instance of our Codable type
         let decoded: CustomType
         do { decoded = try decoder.decode(CustomType.self, from: data) }

@@ -1,7 +1,7 @@
 //
 //  ContentView.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftOSCIOCocoa
@@ -9,13 +9,13 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var oscManager: OSCManager
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text("By default, port 8000 is opened to listen for incoming OSC data. Port 8000 is used to send the test message.")
-            
+
             Text("Received OSC messages are logged to the console.")
-            
+
             Button("Send Test OSC Message") {
                 sendTestOSCMessage()
             }
@@ -24,10 +24,10 @@ struct ContentView: View {
         .padding()
         .frame(maxWidth: 480)
     }
-    
+
     private func sendTestOSCMessage() {
         let customType = CustomType(id: Int.random(in: 0 ... 9), name: UUID().uuidString)
-        
+
         oscManager.send(
             .message("/test", values: [customType]),
             to: "localhost", // destination IP address or host

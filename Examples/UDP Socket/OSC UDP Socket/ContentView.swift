@@ -1,7 +1,7 @@
 //
 //  ContentView.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftOSCIOCocoa
@@ -9,24 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var oscManager: OSCManager
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Group {
                 Text("The `OSCUDPSocket` class is designed to send and receive OSC using a single local port.")
-                
+
                 Text("Received OSC messages are logged to the console in this example.")
-                
+
                 Text("The socket object must be started before messages can be sent or received.")
             }
             .multilineTextAlignment(.center)
-            
+
             #if !os(tvOS)
             GroupBox { configurationView }
             #else
             configurationView
             #endif
-            
+
             Button("Send Test OSC Message") {
                 sendTestOSCMessage()
             }
@@ -35,7 +35,7 @@ struct ContentView: View {
         .padding()
         .frame(maxWidth: 600)
     }
-    
+
     private var configurationView: some View {
         VStack(spacing: 20) {
             Group {
@@ -45,32 +45,32 @@ struct ContentView: View {
                         .keyboardType(.decimalPad)
                     #endif
                 }
-                
+
                 RowView(label: "Remote Host") {
                     TextField("", text: $oscManager.remoteHost)
                 }
-                
+
                 RowView(label: "Remote Port") {
                     TextField("", value: $oscManager.remotePort, formatter: .networkPort)
                     #if !os(macOS)
                         .keyboardType(.decimalPad)
                     #endif
                 }
-                
+
                 RowView(label: "Enable Broadcast") {
                     Toggle(isOn: $oscManager.isIPv4BroadcastEnabled) { }
                         .labelsHidden()
                 }
             }
             .disabled(oscManager.isStarted)
-            
+
             RowView(label: "Start Socket") {
                 Button("Start") {
                     oscManager.start()
                 }
                 .disabled(oscManager.isStarted)
             }
-            
+
             RowView(label: "Stop Socket") {
                 Button("Stop") {
                     oscManager.stop()
@@ -80,7 +80,7 @@ struct ContentView: View {
         }
         .padding(10)
     }
-    
+
     private func sendTestOSCMessage() {
         oscManager.send(
             .message("/some/address/method", values: ["Test string", 123])
@@ -91,10 +91,10 @@ struct ContentView: View {
 struct RowView<Content: View>: View {
     var label: String
     @ViewBuilder var content: () -> Content
-    
+
     private let labelColumnWidth: CGFloat = 200
     private let controlColumnWidth: CGFloat = 200
-    
+
     var body: some View {
         HStack(spacing: 20) {
             Text(label)

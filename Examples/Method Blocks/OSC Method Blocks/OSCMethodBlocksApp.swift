@@ -1,7 +1,7 @@
 //
 //  OSCMethodBlocksApp.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftUI
@@ -9,7 +9,7 @@ import SwiftUI
 @main
 struct OSCMethodBlocksApp: App {
     @StateObject var oscManager = OSCManager()
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -1,7 +1,7 @@
 //
 //  ContentView.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import SwiftOSCIOCocoa
@@ -9,15 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var oscManager: OSCManager
-    
+
     var body: some View {
         VStack(spacing: 20) {
             Text(
                 "In this example, port 8000 is opened by the OSC server to listen for incoming OSC packets. The OSC client sends the test message to local port 8000."
             )
-            
+
             Text("Received OSC messages are logged to the console.")
-            
+
             Button("Send Test OSC Message") {
                 sendTestOSCMessage()
             }
@@ -26,7 +26,7 @@ struct ContentView: View {
         .padding()
         .frame(maxWidth: 480)
     }
-    
+
     private func sendTestOSCMessage() {
         oscManager.send(
             .message("/some/address/method", values: ["Test string", 123]),

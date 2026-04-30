@@ -1,7 +1,7 @@
 //
 //  OSCTimeTag OSC 1.1 Tests.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 #if canImport(Darwin) && !os(watchOS)
@@ -9,102 +9,103 @@
 @testable import SwiftOSCIOCocoa
 import Testing
 
-@Suite struct OSCTimeTag_OSC1_1_Tests {
+@Suite
+struct OSCTimeTag_OSC1_1_Tests {
     @Test
     func defaultTimeTag() async throws {
         try await confirmation(expectedCount: 1) { confirmation in
             let server = OSCUDPServer(timeTagMode: .ignore)
-            
+
             server.setReceiveHandler { _, _, _, _ in
                 confirmation()
             }
-            
+
             let bundle = OSCBundle([
                 .message("/test", values: [Int32(123)])
             ])
-            
+
             server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
-            
+
             try await Task.sleep(seconds: 0.5)
         }
     }
-    
+
     @Test
     func immediate() async throws {
         try await confirmation(expectedCount: 1) { confirmation in
             let server = OSCUDPServer(timeTagMode: .ignore)
-            
+
             server.setReceiveHandler { _, _, _, _ in
                 confirmation()
             }
-            
+
             let bundle = OSCBundle(
                 timeTag: .immediate(),
                 [.message("/test", values: [Int32(123)])]
             )
-            
+
             server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
-            
+
             try await Task.sleep(seconds: 0.5)
         }
     }
-    
+
     @Test
     func now() async throws {
         try await confirmation(expectedCount: 1) { confirmation in
             let server = OSCUDPServer(timeTagMode: .ignore)
-            
+
             server.setReceiveHandler { _, _, _, _ in
                 confirmation()
             }
-            
+
             let bundle = OSCBundle(
                 timeTag: .now(),
                 [.message("/test", values: [Int32(123)])]
             )
-            
+
             server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
-            
+
             try await Task.sleep(seconds: 0.5)
         }
     }
-    
+
     @Test
     func oneSecondInFuture() async throws {
         try await confirmation(expectedCount: 1) { confirmation in
             let server = OSCUDPServer(timeTagMode: .ignore)
-            
+
             server.setReceiveHandler { _, _, _, _ in
                 confirmation()
             }
-            
+
             let bundle = OSCBundle(
                 timeTag: .timeIntervalSinceNow(1.0),
                 [.message("/test", values: [Int32(123)])]
             )
-            
+
             server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
-            
+
             try await Task.sleep(seconds: 0.5)
         }
     }
-    
+
     @Test
     func past() async throws {
         try await confirmation(expectedCount: 1) { confirmation in
             let server = OSCUDPServer(timeTagMode: .ignore)
-            
+
             server.setReceiveHandler { _, _, _, _ in
                 confirmation()
             }
-            
+
             let bundle = OSCBundle(
                 timeTag: .timeIntervalSinceNow(-1.0),
                 [.message("/test", values: [Int32(123)])]
             )
-            
+
             server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
-            
+
             try await Task.sleep(seconds: 0.5)
         }
     }

@@ -1,24 +1,25 @@
 //
 //  OSCManager.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
 import SwiftOSCIOCocoa
 
 /// OSC lifecycle and send/receive manager.
-@MainActor final class OSCManager: ObservableObject {
+@MainActor
+final class OSCManager: ObservableObject {
     private let client = OSCUDPClient()
     private let server = OSCUDPServer(port: 8000)
-    
+
     init() {
         do {
             try OSCSerialization.shared.registerType(CustomType.self)
         } catch {
             print(error.localizedDescription)
         }
-        
+
         start()
     }
 }
@@ -30,7 +31,7 @@ extension OSCManager {
     func start() {
         // setup client
         do { try client.start() } catch { print(error.localizedDescription) }
-        
+
         // setup server
         server.setReceiveHandler { [weak self] message, timeTag, host, port in
             Task { @MainActor in
@@ -39,7 +40,7 @@ extension OSCManager {
         }
         do { try server.start() } catch { print(error.localizedDescription) }
     }
-    
+
     func stop() {
         client.stop()
         server.stop()
@@ -52,7 +53,7 @@ extension OSCManager {
     func handle(message: OSCMessage, timeTag: OSCTimeTag, host: String, port: UInt16) {
         do {
             let customTypeValue = try message.values.masked(CustomType.self)
-            
+
             let msg = message.addressPattern.stringValue
             let id = customTypeValue.id
             let name = customTypeValue.name

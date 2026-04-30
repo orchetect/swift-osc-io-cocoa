@@ -1,22 +1,23 @@
 //
 //  OSCManager.swift
-//  SwiftOSC • https://github.com/orchetect/SwiftOSC
-//  © 2020-2026 Steffan Andrews • Licensed under MIT License
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
 import Foundation
 import SwiftOSCIOCocoa
 
 /// OSC lifecycle and send/receive manager.
-@MainActor final class OSCManager: ObservableObject {
+@MainActor
+final class OSCManager: ObservableObject {
     private var socket: OSCUDPSocket?
-    
+
     @Published var localPort: UInt16 = 8000
     @Published var remoteHost: String = "localhost"
     @Published var remotePort: UInt16 = 8000
     @Published var isIPv4BroadcastEnabled: Bool = false
     @Published private(set) var isStarted: Bool = false
-    
+
     init() { }
 }
 
@@ -27,7 +28,7 @@ extension OSCManager {
     func start() {
         do {
             guard socket == nil else { return }
-            
+
             let newSocket = OSCUDPSocket(
                 localPort: localPort,
                 remoteHost: remoteHost,
@@ -35,15 +36,15 @@ extension OSCManager {
                 isIPv4BroadcastEnabled: isIPv4BroadcastEnabled
             )
             socket = newSocket
-            
+
             newSocket.setReceiveHandler { message, timeTag, host, port in
                 print("\(host) port \(port) - \(message) with time tag: \(timeTag)")
             }
-            
+
             try newSocket.start()
-            
+
             isStarted = true
-            
+
             let lp = newSocket.localPort
             let rp = newSocket.remotePort
             print("Using local port \(lp) and remote port \(rp) with remote host \(remoteHost).")
@@ -52,7 +53,7 @@ extension OSCManager {
             print("Error while starting OSC socket: \(error)")
         }
     }
-    
+
     func stop() {
         defer {
             isStarted = false
