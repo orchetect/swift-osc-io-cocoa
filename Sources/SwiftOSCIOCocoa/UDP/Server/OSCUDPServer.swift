@@ -1,6 +1,6 @@
 //
 //  OSCUDPServer.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
+//  SwiftOSC • https://github.com/orchetect/SwiftOSC
 //  © 2020-2026 Steffan Andrews • Licensed under MIT License
 //
 
@@ -8,7 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
-import OSCKitCore
+import SwiftOSCCore
 
 /// Receives OSC packets from the network on a specific UDP listen port.
 ///
@@ -81,7 +81,7 @@ public final class OSCUDPServer {
         self.interface = interface
         self.isPortReuseEnabled = isPortReuseEnabled
         self.timeTagMode = timeTagMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.OSCKit.OSCUDPServer.queue")
+        let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCUDPServer.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
         

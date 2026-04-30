@@ -1,6 +1,6 @@
 //
 //  OSCTCPFramingMode.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
+//  SwiftOSC • https://github.com/orchetect/SwiftOSC
 //  © 2020-2026 Steffan Andrews • Licensed under MIT License
 //
 

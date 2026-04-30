@@ -1,6 +1,6 @@
 //
 //  OSCTCPServer ClientConnection.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
+//  SwiftOSC • https://github.com/orchetect/SwiftOSC
 //  © 2020-2026 Steffan Andrews • Licensed under MIT License
 //
 
@@ -8,7 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
-import OSCKitCore
+import SwiftOSCCore
 
 extension OSCTCPServer {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.

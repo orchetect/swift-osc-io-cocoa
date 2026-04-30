@@ -1,6 +1,6 @@
 //
 //  OSCTCPClient.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
+//  SwiftOSC • https://github.com/orchetect/SwiftOSC
 //  © 2020-2026 Steffan Andrews • Licensed under MIT License
 //
 
@@ -8,7 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
-import OSCKitCore
+import SwiftOSCCore
 
 /// Connects to a remote host via TCP connection in order to send and receive OSC packets over the network.
 ///
@@ -81,7 +81,7 @@ public final class OSCTCPClient {
         self.interface = interface
         self.timeTagMode = timeTagMode
         self.framingMode = framingMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.OSCKit.OSCTCPClient.queue")
+        let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCTCPClient.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
         

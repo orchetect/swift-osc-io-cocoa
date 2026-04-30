@@ -1,6 +1,6 @@
 //
 //  OSCTCPSendProtocol.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
+//  SwiftOSC • https://github.com/orchetect/SwiftOSC
 //  © 2020-2026 Steffan Andrews • Licensed under MIT License
 //
 
@@ -8,7 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
-import OSCKitCore
+import SwiftOSCCore
 
 /// Internal protocol that TCP-based OSC classes adopt in order to send OSC packets.
 protocol _OSCTCPSendProtocol: AnyObject where Self: Sendable {

@@ -1,6 +1,6 @@
 //
 //  OSCTCPServer.swift
-//  OSCKit • https://github.com/orchetect/OSCKit
+//  SwiftOSC • https://github.com/orchetect/SwiftOSC
 //  © 2020-2026 Steffan Andrews • Licensed under MIT License
 //
 
@@ -8,7 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
-import OSCKitCore
+import SwiftOSCCore
 
 /// Listens on a local port for TCP connections in order to send and receive OSC packets over the network.
 ///
@@ -79,7 +79,7 @@ public final class OSCTCPServer {
         self.interface = interface
         self.timeTagMode = timeTagMode
         self.framingMode = framingMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.OSCKit.OSCTCPServer.queue")
+        let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCTCPServer.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
         
