@@ -8,9 +8,11 @@ Network I/O extension for [SwiftOSCCore](https://github.com/orchetect/swift-osc-
 
 ## Compatibility
 
-| macOS | iOS  | tvOS | visionOS | watchOS | Linux | Android | Windows |
-| :---: | :--: | :--: | :------: | :-----: | :---: | :-----: | :-----: |
-|   🟢   |  🟢   |  🟢   |    🟢     |    -    |   -   |    -    |    -    |
+| macOS | iOS  | tvOS | visionOS | watchOS | Linux | Android | WASM | Windows |
+| :---: | :--: | :--: | :------: | :-----: | :---: | :-----: | :--: | :-----: |
+|   🟢   |  🟢   |  🟢   |    🟢     |  -[^1]  |   -   |    -    |  -   |    -    |
+
+[^1]: CocoaAsyncSocket does not have watchOS support.
 
 ## Getting Started
 
