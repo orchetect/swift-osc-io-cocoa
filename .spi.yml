@@ -4,4 +4,10 @@ builder:
     - documentation_targets: [SwiftOSCIOCocoa]
       scheme: swift-osc-io-cocoa
     - platform: watchOS
-      scheme: NOT-SUPPORTED
+      scheme: NOT_SUPPORTED
+    - platform: linux
+      target: NOT_SUPPORTED
+    - platform: android
+      target: NOT_SUPPORTED
+    - platform: wasm
+      target: NOT_SUPPORTED
