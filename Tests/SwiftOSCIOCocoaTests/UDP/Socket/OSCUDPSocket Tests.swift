@@ -17,7 +17,7 @@ struct OSCUDPSocket_Tests {
     @Test
     func emptyBundle() async throws {
         try await confirmation(expectedCount: 0) { confirmation in
-            let socket = OSCUDPSocket(remoteHost: "localhost")
+            let socket = OSCUDPSocket(remoteHost: "127.0.0.1")
 
             socket.setReceiveHandler { _, _, _, _ in
                 confirmation()
@@ -25,7 +25,7 @@ struct OSCUDPSocket_Tests {
 
             let bundle = OSCBundle()
 
-            socket._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
+            socket._handle(packet: .bundle(bundle), remoteHost: "127.0.0.1", remotePort: 8000)
 
             try await Task.sleep(seconds: 1)
         }
@@ -60,7 +60,7 @@ struct OSCUDPSocket_Tests {
 
         // use global thread to simulate internal network thread being a dedicated thread
         DispatchQueue.global().async {
-            server._handle(packet: .message(msg1), remoteHost: "localhost", remotePort: 8000)
+            server._handle(packet: .message(msg1), remoteHost: "127.0.0.1", remotePort: 8000)
             server._handle(packet: .message(msg2), remoteHost: "192.168.0.25", remotePort: 8001)
             server._handle(packet: .message(msg3), remoteHost: "10.0.0.50", remotePort: 8080)
         }
@@ -69,7 +69,7 @@ struct OSCUDPSocket_Tests {
 
         let message1 = await receiver.messages[0]
         #expect(message1.message == msg1)
-        #expect(message1.host == "localhost")
+        #expect(message1.host == "127.0.0.1")
         #expect(message1.port == 8000)
 
         let message2 = await receiver.messages[1]
@@ -88,7 +88,7 @@ struct OSCUDPSocket_Tests {
     func stressTestOffline() async throws {
         let socket = OSCUDPSocket(
             localPort: nil,
-            remoteHost: "localhost",
+            remoteHost: "127.0.0.1",
             remotePort: nil,
             timeTagMode: .ignore,
             isIPv4BroadcastEnabled: false,
@@ -126,7 +126,7 @@ struct OSCUDPSocket_Tests {
         // use global thread to simulate internal network thread being a dedicated thread
         DispatchQueue.global().async {
             for message in sourceMessages {
-                socket._handle(packet: .message(message), remoteHost: "localhost", remotePort: 8000)
+                socket._handle(packet: .message(message), remoteHost: "127.0.0.1", remotePort: 8000)
             }
         }
 
@@ -144,7 +144,7 @@ struct OSCUDPSocket_Tests {
 
         let socket = OSCUDPSocket(
             localPort: nil, // selects a random available port
-            remoteHost: "localhost",
+            remoteHost: "127.0.0.1",
             remotePort: nil, // gets set to same port as localPort
             timeTagMode: .ignore,
             isIPv4BroadcastEnabled: false,

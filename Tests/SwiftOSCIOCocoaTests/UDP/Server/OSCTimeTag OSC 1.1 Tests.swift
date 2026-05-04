@@ -24,7 +24,7 @@ struct OSCTimeTag_OSC1_1_Tests {
                 .message("/test", values: [Int32(123)])
             ])
 
-            server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
+            server._handle(packet: .bundle(bundle), remoteHost: "127.0.0.1", remotePort: 8000)
 
             try await Task.sleep(seconds: 0.5)
         }
@@ -44,7 +44,7 @@ struct OSCTimeTag_OSC1_1_Tests {
                 [.message("/test", values: [Int32(123)])]
             )
 
-            server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
+            server._handle(packet: .bundle(bundle), remoteHost: "127.0.0.1", remotePort: 8000)
 
             try await Task.sleep(seconds: 0.5)
         }
@@ -64,7 +64,7 @@ struct OSCTimeTag_OSC1_1_Tests {
                 [.message("/test", values: [Int32(123)])]
             )
 
-            server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
+            server._handle(packet: .bundle(bundle), remoteHost: "127.0.0.1", remotePort: 8000)
 
             try await Task.sleep(seconds: 0.5)
         }
@@ -84,7 +84,7 @@ struct OSCTimeTag_OSC1_1_Tests {
                 [.message("/test", values: [Int32(123)])]
             )
 
-            server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
+            server._handle(packet: .bundle(bundle), remoteHost: "127.0.0.1", remotePort: 8000)
 
             try await Task.sleep(seconds: 0.5)
         }
@@ -104,7 +104,7 @@ struct OSCTimeTag_OSC1_1_Tests {
                 [.message("/test", values: [Int32(123)])]
             )
 
-            server._handle(packet: .bundle(bundle), remoteHost: "localhost", remotePort: 8000)
+            server._handle(packet: .bundle(bundle), remoteHost: "127.0.0.1", remotePort: 8000)
 
             try await Task.sleep(seconds: 0.5)
         }
