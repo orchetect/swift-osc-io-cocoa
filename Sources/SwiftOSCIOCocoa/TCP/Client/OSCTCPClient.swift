@@ -24,8 +24,8 @@ import SwiftOSCCore
 public final class OSCTCPClient {
     let tcpSocket: GCDAsyncSocket
     let tcpDelegate: OSCTCPClientDelegate
-    let queue: DispatchQueue
-    var receiveHandler: OSCHandlerBlock?
+    public let queue: DispatchQueue
+    public internal(set) var receiveHandler: OSCHandlerBlock?
     var notificationHandler: NotificationHandlerBlock?
 
     /// Notification handler closure.

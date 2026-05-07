@@ -18,8 +18,8 @@ import SwiftOSCCore
 public final class OSCUDPServer {
     let udpSocket: GCDAsyncUdpSocket
     let udpDelegate = OSCUDPServerDelegate()
-    let queue: DispatchQueue
-    var receiveHandler: OSCHandlerBlock?
+    public let queue: DispatchQueue
+    public internal(set) var receiveHandler: OSCHandlerBlock?
 
     /// Time tag mode. Determines how OSC bundle time tags are handled.
     public var timeTagMode: OSCTimeTagMode
@@ -121,7 +121,7 @@ extension OSCUDPServer {
 
 // MARK: - Communication
 
-extension OSCUDPServer: _OSCHandlerProtocol {
+extension OSCUDPServer: OSCHandlerProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 

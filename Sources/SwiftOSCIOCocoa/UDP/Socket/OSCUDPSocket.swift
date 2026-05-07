@@ -8,6 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
+import SwiftOSCCore
 
 /// Sends and receives OSC packets over the network by binding a single local UDP port to both send
 /// OSC packets from and listen for incoming packets.
@@ -24,8 +25,8 @@ import Foundation
 public final class OSCUDPSocket {
     let udpSocket: GCDAsyncUdpSocket
     let udpDelegate = OSCUDPServerDelegate()
-    let queue: DispatchQueue
-    var receiveHandler: OSCHandlerBlock?
+    public let queue: DispatchQueue
+    public internal(set) var receiveHandler: OSCHandlerBlock?
 
     /// Time tag mode. Determines how OSC bundle time tags are handled.
     public var timeTagMode: OSCTimeTagMode
@@ -235,7 +236,7 @@ extension OSCUDPSocket {
     }
 }
 
-extension OSCUDPSocket: _OSCHandlerProtocol { }
+extension OSCUDPSocket: OSCHandlerProtocol { }
 
 // MARK: - Properties
 
