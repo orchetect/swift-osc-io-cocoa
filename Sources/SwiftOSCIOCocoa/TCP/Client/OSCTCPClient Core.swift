@@ -11,7 +11,7 @@ import Foundation
 internal import SwiftOSCIOInternals
 
 extension OSCTCPClient {
-    /// Internal client class so as to not expose I/O implementation details as public.
+    /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCTCPClient
         weak var parent: Parent?

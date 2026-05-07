@@ -18,28 +18,16 @@ protocol _OSCTCPSendProtocol: AnyObject where Self: Sendable {
 }
 
 extension _OSCTCPSendProtocol {
-    /// Send an OSC packet.
-    ///
-    /// - Parameters:
-    ///   - oscPacket: OSC bundle or message.
-    func _send(_ oscPacket: OSCPacket) throws {
-        try _send(oscPacket.rawData())
+    func _send(_ packet: OSCPacket) throws {
+        try _send(packet.rawData())
     }
 
-    /// Send an OSC bundle.
-    ///
-    /// - Parameters:
-    ///   - oscBundle: OSC bundle.
-    func _send(_ oscBundle: OSCBundle) throws {
-        try _send(oscBundle.rawData())
+    func _send(_ bundle: OSCBundle) throws {
+        try _send(bundle.rawData())
     }
 
-    /// Send an OSC message.
-    ///
-    /// - Parameters:
-    ///   - oscMessage: OSC message.
-    func _send(_ oscMessage: OSCMessage) throws {
-        try _send(oscMessage.rawData())
+    func _send(_ message: OSCMessage) throws {
+        try _send(message.rawData())
     }
 
     /// Send an OSC packet.

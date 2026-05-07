@@ -6,7 +6,6 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@preconcurrency import CocoaAsyncSocket
 import Foundation
 import SwiftOSCCore
 
@@ -22,7 +21,7 @@ import SwiftOSCCore
 /// What differentiates this client class from the server class is that the client class is designed to connect to a
 /// remote TCP server. (Whereas, the server is designed to listen for inbound connections.)
 public final class OSCTCPClient {
-    /// Internal client core.
+    /// Internal operations core.
     let core: Core
 
     /// Notification type.
@@ -123,18 +122,18 @@ extension OSCTCPClient {
 
 extension OSCTCPClient {
     /// Send an OSC bundle or message to the host.
-    public func send(_ oscPacket: OSCPacket) throws {
-        try core._send(oscPacket)
+    public func send(_ packet: OSCPacket) throws {
+        try core._send(packet)
     }
 
     /// Send an OSC bundle to the host.
-    public func send(_ oscBundle: OSCBundle) throws {
-        try core._send(oscBundle)
+    public func send(_ bundle: OSCBundle) throws {
+        try core._send(bundle)
     }
 
     /// Send an OSC message to the host.
-    public func send(_ oscMessage: OSCMessage) throws {
-        try core._send(oscMessage)
+    public func send(_ message: OSCMessage) throws {
+        try core._send(message)
     }
 }
 
