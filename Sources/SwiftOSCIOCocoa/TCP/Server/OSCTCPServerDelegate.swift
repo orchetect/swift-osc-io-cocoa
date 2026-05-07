@@ -38,7 +38,7 @@ extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
         let clientID = newClientID()
         let newConnection = OSCTCPServer.ClientConnection(
             tcpSocket: newSocket,
-            tcpSocketTag: clientID,
+            clientID: clientID,
             framingMode: framingMode,
             delegate: self
         )

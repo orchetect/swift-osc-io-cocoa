@@ -21,39 +21,39 @@ extension _OSCTCPSendProtocol {
     ///
     /// - Parameters:
     ///   - oscPacket: OSC bundle or message.
-    ///   - tag: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
+    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
     ///     send to.
-    func _send(_ oscPacket: OSCPacket, tag: OSCTCPClientSessionID) throws {
-        try _send(oscPacket.rawData(), tag: tag)
+    func _send(_ oscPacket: OSCPacket, clientID: OSCTCPClientSessionID) throws {
+        try _send(oscPacket.rawData(), clientID: clientID)
     }
 
     /// Send an OSC bundle.
     ///
     /// - Parameters:
     ///   - oscBundle: OSC bundle.
-    ///   - tag: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
+    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
     ///     send to.
-    func _send(_ oscBundle: OSCBundle, tag: OSCTCPClientSessionID) throws {
-        try _send(oscBundle.rawData(), tag: tag)
+    func _send(_ oscBundle: OSCBundle, clientID: OSCTCPClientSessionID) throws {
+        try _send(oscBundle.rawData(), clientID: clientID)
     }
 
     /// Send an OSC message.
     ///
     /// - Parameters:
     ///   - oscMessage: OSC message.
-    ///   - tag: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
+    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
     ///     send to.
-    func _send(_ oscMessage: OSCMessage, tag: OSCTCPClientSessionID) throws {
-        try _send(oscMessage.rawData(), tag: tag)
+    func _send(_ oscMessage: OSCMessage, clientID: OSCTCPClientSessionID) throws {
+        try _send(oscMessage.rawData(), clientID: clientID)
     }
 
     /// Send an OSC packet.
     ///
     /// - Parameters:
     ///   - oscData: Raw bytes of an OSC bundle or message.
-    ///   - tag: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
+    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
     ///     send to.
-    private func _send(_ oscData: Data, tag: OSCTCPClientSessionID) {
+    private func _send(_ oscData: Data, clientID: OSCTCPClientSessionID) {
         // guard isConnected else {
         //     throw GCDAsyncUdpSocketError(
         //         .closedError,
@@ -78,7 +78,7 @@ extension _OSCTCPSendProtocol {
         }
 
         // send packet
-        tcpSocket.write(data, withTimeout: -1, tag: tag)
+        tcpSocket.write(data, withTimeout: -1, tag: clientID)
     }
 }
 

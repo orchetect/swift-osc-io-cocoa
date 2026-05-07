@@ -14,26 +14,28 @@ extension OSCTCPServer {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
         weak var delegate: OSCTCPServerDelegate?
+        let tcpDelegate: OSCTCPClientDelegate
+        
         let tcpSocket: GCDAsyncSocket
+        let clientID: OSCTCPClientSessionID
         let remoteHost: String // cached, since GCDAsyncSocket resets it upon disconnection
         let remotePort: UInt16 // cached, since GCDAsyncSocket resets it upon disconnection
-        let tcpDelegate: OSCTCPClientDelegate
-        let tcpSocketTag: Int
         let framingMode: OSCTCPFramingMode
 
         init(
             tcpSocket: GCDAsyncSocket,
-            tcpSocketTag: Int,
+            clientID: OSCTCPClientSessionID,
             framingMode: OSCTCPFramingMode,
             delegate: OSCTCPServerDelegate?
         ) {
+            self.delegate = delegate
+            
             self.tcpSocket = tcpSocket
+            self.clientID = clientID
             remoteHost = tcpSocket.connectedHost ?? ""
             remotePort = tcpSocket.connectedPort
-            self.tcpSocketTag = tcpSocketTag
             self.framingMode = framingMode
-            self.delegate = delegate
-
+            
             tcpDelegate = OSCTCPClientDelegate()
             tcpDelegate.oscServer = self
         }
@@ -59,15 +61,15 @@ extension OSCTCPServer.ClientConnection {
 
 extension OSCTCPServer.ClientConnection: _OSCTCPSendProtocol {
     func send(_ oscPacket: OSCPacket) throws {
-        try _send(oscPacket, tag: tcpSocketTag)
+        try _send(oscPacket, clientID: clientID)
     }
 
     func send(_ oscBundle: OSCBundle) throws {
-        try _send(oscBundle, tag: tcpSocketTag)
+        try _send(oscBundle, clientID: clientID)
     }
 
     func send(_ oscMessage: OSCMessage) throws {
-        try _send(oscMessage, tag: tcpSocketTag)
+        try _send(oscMessage, clientID: clientID)
     }
 }
 
@@ -97,7 +99,7 @@ extension OSCTCPServer.ClientConnection: _OSCTCPGeneratesClientNotificationsProt
         delegate?.oscServer?._generateConnectedNotification(
             remoteHost: remoteHost,
             remotePort: remotePort,
-            clientID: tcpSocketTag
+            clientID: clientID
         )
     }
 
@@ -108,7 +110,7 @@ extension OSCTCPServer.ClientConnection: _OSCTCPGeneratesClientNotificationsProt
         delegate?.oscServer?._generateDisconnectedNotification(
             remoteHost: remoteHost,
             remotePort: remotePort,
-            clientID: tcpSocketTag,
+            clientID: clientID,
             error: error
         )
     }
