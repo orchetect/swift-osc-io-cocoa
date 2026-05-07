@@ -9,6 +9,7 @@
 @preconcurrency import CocoaAsyncSocket
 import Foundation
 import SwiftOSCCore
+internal import SwiftOSCIOInternals
 
 /// Receives OSC packets from the network on a specific UDP listen port.
 ///
@@ -18,8 +19,8 @@ import SwiftOSCCore
 public final class OSCUDPServer {
     let udpSocket: GCDAsyncUdpSocket
     let udpDelegate = OSCUDPServerDelegate()
-    public let queue: DispatchQueue
-    public internal(set) var receiveHandler: OSCHandlerBlock?
+    let queue: DispatchQueue
+    var receiveHandler: OSCHandlerBlock?
 
     /// Time tag mode. Determines how OSC bundle time tags are handled.
     public var timeTagMode: OSCTimeTagMode
@@ -121,7 +122,7 @@ extension OSCUDPServer {
 
 // MARK: - Communication
 
-extension OSCUDPServer: OSCHandlerProtocol {
+extension OSCUDPServer: _OSCHandlerProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 

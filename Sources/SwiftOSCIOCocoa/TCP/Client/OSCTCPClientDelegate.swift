@@ -8,6 +8,7 @@
 
 @preconcurrency import CocoaAsyncSocket
 import Foundation
+internal import SwiftOSCIOInternals
 
 /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
 final class OSCTCPClientDelegate: NSObject {

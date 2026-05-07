@@ -236,7 +236,7 @@ extension OSCUDPSocket {
     }
 }
 
-extension OSCUDPSocket: OSCHandlerProtocol { }
+extension OSCUDPSocket: _OSCHandlerProtocol { }
 
 // MARK: - Properties
 

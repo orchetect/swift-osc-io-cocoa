@@ -19,6 +19,8 @@ let package = Package(
             name: "SwiftOSCIOCocoa",
             dependencies: [
                 .product(name: "SwiftOSCCore", package: "swift-osc-core"),
+                .product(name: "SwiftOSCIOCore", package: "swift-osc-core"),
+                .product(name: "SwiftOSCIOInternals", package: "swift-osc-core"),
                 .product(
                     name: "CocoaAsyncSocket",
                     package: "CocoaAsyncSocket",

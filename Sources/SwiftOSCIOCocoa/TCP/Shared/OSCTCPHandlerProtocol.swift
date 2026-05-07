@@ -9,6 +9,7 @@
 @preconcurrency import CocoaAsyncSocket
 import Foundation
 import SwiftOSCCore
+internal import SwiftOSCIOInternals
 
 /// Internal protocol that TCP-based OSC classes adopt in order to handle incoming OSC data.
 protocol _OSCTCPHandlerProtocol: OSCTCPHandlerProtocol {
