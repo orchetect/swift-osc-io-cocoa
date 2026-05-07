@@ -14,7 +14,7 @@ extension OSCTCPServer {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
         weak var delegate: OSCTCPServerDelegate?
-        let tcpDelegate: OSCTCPClientDelegate
+        let tcpDelegate: OSCTCPClient.Delegate
         
         let tcpSocket: GCDAsyncSocket
         let clientID: OSCTCPClientSessionID
@@ -36,7 +36,7 @@ extension OSCTCPServer {
             remotePort = tcpSocket.connectedPort
             self.framingMode = framingMode
             
-            tcpDelegate = OSCTCPClientDelegate()
+            tcpDelegate = OSCTCPClient.Delegate()
             tcpDelegate.oscServer = self
         }
 

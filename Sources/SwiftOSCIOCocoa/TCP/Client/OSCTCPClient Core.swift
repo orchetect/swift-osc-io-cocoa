@@ -17,7 +17,7 @@ extension OSCTCPClient {
         weak var parent: Parent?
         
         let tcpSocket: GCDAsyncSocket
-        let tcpDelegate: OSCTCPClientDelegate
+        let tcpDelegate: Parent.Delegate
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
         var receiveHandler: OSCHandlerBlock?
@@ -46,7 +46,7 @@ extension OSCTCPClient {
             self.queue = queue
             self.receiveHandler = receiveHandler
             
-            tcpDelegate = OSCTCPClientDelegate()
+            tcpDelegate = Parent.Delegate()
             tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
             tcpDelegate.oscServer = self
         }

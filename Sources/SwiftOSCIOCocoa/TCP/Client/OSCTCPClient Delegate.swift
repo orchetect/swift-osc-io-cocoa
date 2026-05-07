@@ -1,5 +1,5 @@
 //
-//  OSCTCPClientDelegate.swift
+//  OSCTCPClient Delegate.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -10,17 +10,19 @@
 import Foundation
 internal import SwiftOSCIOInternals
 
-/// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
-final class OSCTCPClientDelegate: NSObject {
-    weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesClientNotificationsProtocol)?
-
-    // already implemented by NSObject
-    // init() { }
+extension OSCTCPClient {
+    /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
+    final class Delegate: NSObject {
+        weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesClientNotificationsProtocol)?
+        
+        // already implemented by NSObject
+        // init() { }
+    }
 }
 
-extension OSCTCPClientDelegate: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPClient.Delegate: @unchecked Sendable { } // TODO: unchecked
 
-extension OSCTCPClientDelegate: GCDAsyncSocketDelegate {
+extension OSCTCPClient.Delegate: GCDAsyncSocketDelegate {
     func newSocketQueueForConnection(fromAddress address: Data, on sock: GCDAsyncSocket) -> dispatch_queue_t? {
         oscServer?.queue
     }
