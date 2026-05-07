@@ -13,7 +13,7 @@ import SwiftOSCCore
 extension OSCTCPServer {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
-        weak var delegate: OSCTCPServerDelegate?
+        weak var delegate: OSCTCPServer.Delegate?
         let tcpDelegate: OSCTCPClient.Delegate
         
         let tcpSocket: GCDAsyncSocket
@@ -26,7 +26,7 @@ extension OSCTCPServer {
             tcpSocket: GCDAsyncSocket,
             clientID: OSCTCPClientSessionID,
             framingMode: OSCTCPFramingMode,
-            delegate: OSCTCPServerDelegate?
+            delegate: OSCTCPServer.Delegate?
         ) {
             self.delegate = delegate
             

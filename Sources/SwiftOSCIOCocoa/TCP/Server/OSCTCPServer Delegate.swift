@@ -1,5 +1,5 @@
 //
-//  OSCTCPServerDelegate.swift
+//  OSCTCPServer Delegate.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -9,26 +9,28 @@
 @preconcurrency import CocoaAsyncSocket
 import Foundation
 
-/// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
-final class OSCTCPServerDelegate: NSObject {
-    weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesServerNotificationsProtocol)?
-    let framingMode: OSCTCPFramingMode
-
-    /// Currently connected client sessions.
-    var clients: [OSCTCPClientSessionID: OSCTCPServer.ClientConnection] = [:]
-
-    init(framingMode: OSCTCPFramingMode) {
-        self.framingMode = framingMode
-    }
-
-    deinit {
-        closeClients()
+extension OSCTCPServer {
+    /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
+    final class Delegate: NSObject {
+        weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesServerNotificationsProtocol)?
+        let framingMode: OSCTCPFramingMode
+        
+        /// Currently connected client sessions.
+        var clients: [OSCTCPClientSessionID: OSCTCPServer.ClientConnection] = [:]
+        
+        init(framingMode: OSCTCPFramingMode) {
+            self.framingMode = framingMode
+        }
+        
+        deinit {
+            closeClients()
+        }
     }
 }
 
-extension OSCTCPServerDelegate: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPServer.Delegate: @unchecked Sendable { } // TODO: unchecked
 
-extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
+extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
     func newSocketQueueForConnection(fromAddress address: Data, on sock: GCDAsyncSocket) -> dispatch_queue_t? {
         oscServer?.queue
     }
@@ -110,7 +112,7 @@ extension OSCTCPServerDelegate: GCDAsyncSocketDelegate {
 
 // MARK: - Methods
 
-extension OSCTCPServerDelegate {
+extension OSCTCPServer.Delegate {
     /// Close connections for any connected clients and remove them from the list of connected clients.
     func closeClients() {
         for clientID in clients.keys {
@@ -127,7 +129,7 @@ extension OSCTCPServerDelegate {
 
 // MARK: - Utilities
 
-extension OSCTCPServerDelegate {
+extension OSCTCPServer.Delegate {
     /// Generate a new client ID that is not currently in use by any connected client(s).
     private func newClientID() -> OSCTCPClientSessionID {
         var clientID: Int = 0

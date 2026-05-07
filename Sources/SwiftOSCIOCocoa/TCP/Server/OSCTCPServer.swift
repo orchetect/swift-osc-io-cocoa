@@ -24,7 +24,7 @@ import SwiftOSCCore
 /// connections. (Whereas, the client class is designed to connect to a remote TCP server.)
 public final class OSCTCPServer {
     let tcpSocket: GCDAsyncSocket
-    let tcpDelegate: OSCTCPServerDelegate
+    let tcpDelegate: OSCTCPServer.Delegate
     public let queue: DispatchQueue
     public internal(set) var receiveHandler: OSCHandlerBlock?
     var notificationHandler: NotificationHandlerBlock?
@@ -86,7 +86,7 @@ public final class OSCTCPServer {
         self.queue = queue
         self.receiveHandler = receiveHandler
 
-        tcpDelegate = OSCTCPServerDelegate(framingMode: framingMode)
+        tcpDelegate = OSCTCPServer.Delegate(framingMode: framingMode)
         tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
         tcpDelegate.oscServer = self
     }
