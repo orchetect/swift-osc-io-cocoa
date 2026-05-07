@@ -90,11 +90,7 @@ extension OSCTCPServer.Core {
 extension OSCTCPServer.Core {
     func _send(_ oscPacket: OSCPacket, toClientID clientID: OSCTCPClientSessionID) throws {
         guard let connection = tcpDelegate.clients[clientID] else {
-            // TODO: replace with custom standardized SwiftOSC error, consistent with swift-osc-io-nio
-            throw GCDAsyncUdpSocketError(
-                .badParamError,
-                userInfo: ["Reason": "OSC TCP client socket with ID \(clientID) not found (not connected)."]
-            )
+            throw OSCTCPServerError.clientNotFound(clientID: clientID)
         }
         
         try connection.send(oscPacket)
