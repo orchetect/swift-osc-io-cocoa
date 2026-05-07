@@ -1,5 +1,5 @@
 //
-//  OSCTCPServer ClientConnection.swift
+//  OSCTCPServer Delegate ClientConnection.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -10,7 +10,7 @@
 import Foundation
 import SwiftOSCCore
 
-extension OSCTCPServer {
+extension OSCTCPServer.Delegate {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
         weak var delegate: OSCTCPServer.Delegate?
@@ -46,11 +46,11 @@ extension OSCTCPServer {
     }
 }
 
-extension OSCTCPServer.ClientConnection: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPServer.Delegate.ClientConnection: @unchecked Sendable { } // TODO: unchecked
 
 // MARK: - Lifecycle
 
-extension OSCTCPServer.ClientConnection {
+extension OSCTCPServer.Delegate.ClientConnection {
     func close() {
         tcpSocket.disconnectAfterReadingAndWriting()
         tcpSocket.delegate = nil
@@ -59,7 +59,7 @@ extension OSCTCPServer.ClientConnection {
 
 // MARK: - Communication
 
-extension OSCTCPServer.ClientConnection: _OSCTCPSendProtocol {
+extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPSendProtocol {
     func send(_ oscPacket: OSCPacket) throws {
         try _send(oscPacket)
     }
@@ -73,7 +73,7 @@ extension OSCTCPServer.ClientConnection: _OSCTCPSendProtocol {
     }
 }
 
-extension OSCTCPServer.ClientConnection: _OSCTCPHandlerProtocol {
+extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPHandlerProtocol {
     var queue: DispatchQueue {
         tcpSocket.delegateQueue ?? .global()
     }
@@ -91,7 +91,7 @@ extension OSCTCPServer.ClientConnection: _OSCTCPHandlerProtocol {
     }
 }
 
-extension OSCTCPServer.ClientConnection: _OSCTCPGeneratesClientNotificationsProtocol {
+extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPGeneratesClientNotificationsProtocol {
     // note that this is never called because when a remote connection closes, its socket does not fire
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements
