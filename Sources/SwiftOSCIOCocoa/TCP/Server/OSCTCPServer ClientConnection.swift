@@ -83,6 +83,10 @@ extension OSCTCPServer.ClientConnection: _OSCTCPHandlerProtocol {
     var receiveHandler: OSCHandlerBlock? {
         delegate?.oscServer?.receiveHandler
     }
+    
+    func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+        delegate?.oscServer?.setReceiveHandler(handler)
+    }
 }
 
 extension OSCTCPServer.ClientConnection: _OSCTCPGeneratesClientNotificationsProtocol {
