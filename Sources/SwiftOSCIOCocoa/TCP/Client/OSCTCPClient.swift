@@ -84,7 +84,7 @@ public final class OSCTCPClient {
         self.interface = interface
         self.timeTagMode = timeTagMode
         self.framingMode = framingMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCTCPClient.queue")
+        let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
 

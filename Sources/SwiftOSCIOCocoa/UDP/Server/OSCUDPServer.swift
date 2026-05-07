@@ -81,7 +81,7 @@ public final class OSCUDPServer {
         self.interface = interface
         self.isPortReuseEnabled = isPortReuseEnabled
         self.timeTagMode = timeTagMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.swift-osc.OSCUDPServer.queue")
+        let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue")
         self.queue = queue
         self.receiveHandler = receiveHandler
 
