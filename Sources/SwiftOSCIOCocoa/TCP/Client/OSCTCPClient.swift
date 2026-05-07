@@ -22,12 +22,8 @@ import SwiftOSCCore
 /// What differentiates this client class from the server class is that the client class is designed to connect to a
 /// remote TCP server. (Whereas, the server is designed to listen for inbound connections.)
 public final class OSCTCPClient {
-    let tcpSocket: GCDAsyncSocket
-    let tcpDelegate: OSCTCPClientDelegate
-    let clientID: OSCTCPClientSessionID = 0
-    public let queue: DispatchQueue
-    public internal(set) var receiveHandler: OSCHandlerBlock?
-    var notificationHandler: NotificationHandlerBlock?
+    /// Internal client core.
+    let core: Core
 
     /// Notification type.
     public typealias Notification = OSCTCPClientNotification
@@ -36,24 +32,35 @@ public final class OSCTCPClient {
     public typealias NotificationHandlerBlock = @Sendable (_ notification: Notification) -> Void
 
     /// Time tag mode. Determines how OSC bundle time tags are handled.
-    public var timeTagMode: OSCTimeTagMode
+    public var timeTagMode: OSCTimeTagMode {
+        get { core.timeTagMode }
+        set { core.timeTagMode = newValue }
+    }
 
     /// Remote network hostname.
-    public let remoteHost: String
+    public var remoteHost: String {
+        core.remoteHost
+    }
 
     /// Remote network port.
-    public let remotePort: UInt16
+    public var remotePort: UInt16 {
+        core.remotePort
+    }
 
     /// Network interface to restrict connections to.
-    public let interface: String?
+    public var interface: String? {
+        core.interface
+    }
 
     /// Returns a boolean indicating whether the OSC socket is connected to the remote host.
     public var isConnected: Bool {
-        tcpSocket.isConnected
+        core.tcpSocket.isConnected
     }
 
     /// TCP packet framing mode.
-    public let framingMode: OSCTCPFramingMode
+    public var framingMode: OSCTCPFramingMode {
+        core.framingMode
+    }
 
     /// Initialize with a remote hostname and UDP port.
     ///
@@ -80,26 +87,20 @@ public final class OSCTCPClient {
         queue: DispatchQueue? = nil,
         receiveHandler: OSCHandlerBlock? = nil
     ) {
-        self.remoteHost = remoteHost
-        self.remotePort = remotePort
-        self.interface = interface
-        self.timeTagMode = timeTagMode
-        self.framingMode = framingMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue")
-        self.queue = queue
-        self.receiveHandler = receiveHandler
-
-        tcpDelegate = OSCTCPClientDelegate()
-        tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
-        tcpDelegate.oscServer = self
-    }
-
-    deinit {
-        close()
+        core = Core(
+            remoteHost: remoteHost,
+            remotePort: remotePort,
+            interface: interface,
+            timeTagMode: timeTagMode,
+            framingMode: framingMode,
+            queue: queue,
+            receiveHandler: receiveHandler
+        )
+        core.parent = self
     }
 }
 
-extension OSCTCPClient: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPClient: Sendable { }
 
 // MARK: - Lifecycle
 
@@ -109,53 +110,32 @@ extension OSCTCPClient {
     /// - Parameters:
     ///   - timeout: Supply a timeout period in seconds.
     public func connect(timeout: TimeInterval = 5.0) throws {
-        try tcpSocket.connect(
-            toHost: remoteHost,
-            onPort: remotePort,
-            viaInterface: interface,
-            withTimeout: max(1.0, timeout) // negative values mean indefinite (no timeout) which is a bit dangerous
-        )
+        try core.connect(timeout: timeout)
     }
 
     /// Close the connection, if any.
     public func close() {
-        tcpSocket.disconnectAfterWriting()
+        core.close()
     }
 }
 
 // MARK: - Communication
 
-extension OSCTCPClient: _OSCTCPSendProtocol {
+extension OSCTCPClient {
     /// Send an OSC bundle or message to the host.
     public func send(_ oscPacket: OSCPacket) throws {
-        try _send(oscPacket)
+        try core._send(oscPacket)
     }
 
     /// Send an OSC bundle to the host.
     public func send(_ oscBundle: OSCBundle) throws {
-        try _send(oscBundle)
+        try core._send(oscBundle)
     }
 
     /// Send an OSC message to the host.
     public func send(_ oscMessage: OSCMessage) throws {
-        try _send(oscMessage)
+        try core._send(oscMessage)
     }
-}
-
-extension OSCTCPClient: _OSCTCPGeneratesClientNotificationsProtocol {
-    func _generateConnectedNotification() {
-        let notif: Notification = .connected
-        notificationHandler?(notif)
-    }
-
-    func _generateDisconnectedNotification(error: (any Error)?) {
-        let notif: Notification = .disconnected(error: error)
-        notificationHandler?(notif)
-    }
-}
-
-extension OSCTCPClient: _OSCTCPHandlerProtocol {
-    // provides implementation for dispatching incoming OSC data
 }
 
 // MARK: - Properties
@@ -163,22 +143,14 @@ extension OSCTCPClient: _OSCTCPHandlerProtocol {
 extension OSCTCPClient {
     /// Set the receive handler closure.
     /// This closure will be called when OSC bundles or messages are received.
-    public func setReceiveHandler(
-        _ handler: OSCHandlerBlock?
-    ) {
-        queue.async {
-            self.receiveHandler = handler
-        }
+    public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+        core.setReceiveHandler(handler)
     }
 
     /// Set the notification handler closure.
     /// This closure will be called when a notification is generated, such as connection and disconnection events.
-    public func setNotificationHandler(
-        _ handler: NotificationHandlerBlock?
-    ) {
-        queue.async {
-            self.notificationHandler = handler
-        }
+    public func setNotificationHandler(_ handler: NotificationHandlerBlock?) {
+        core.setNotificationHandler(handler)
     }
 }
 

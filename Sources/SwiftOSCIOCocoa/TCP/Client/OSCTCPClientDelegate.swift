@@ -14,7 +14,8 @@ internal import SwiftOSCIOInternals
 final class OSCTCPClientDelegate: NSObject {
     weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesClientNotificationsProtocol)?
 
-    // init() { } // already implemented by NSObject
+    // already implemented by NSObject
+    // init() { }
 }
 
 extension OSCTCPClientDelegate: @unchecked Sendable { } // TODO: unchecked
