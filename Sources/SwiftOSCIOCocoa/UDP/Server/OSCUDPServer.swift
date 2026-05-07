@@ -18,7 +18,7 @@ internal import SwiftOSCIOInternals
 /// desired.
 public final class OSCUDPServer {
     let udpSocket: GCDAsyncUdpSocket
-    let udpDelegate = OSCUDPServerDelegate()
+    let udpDelegate = Delegate()
     let queue: DispatchQueue
     var receiveHandler: OSCHandlerBlock?
 

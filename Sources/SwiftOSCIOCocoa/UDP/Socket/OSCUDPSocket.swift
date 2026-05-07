@@ -24,7 +24,7 @@ import SwiftOSCCore
 /// by sending OSC messages back to you on port 8000.
 public final class OSCUDPSocket {
     let udpSocket: GCDAsyncUdpSocket
-    let udpDelegate = OSCUDPServerDelegate()
+    let udpDelegate = OSCUDPServer.Delegate()
     public let queue: DispatchQueue
     public internal(set) var receiveHandler: OSCHandlerBlock?
 
