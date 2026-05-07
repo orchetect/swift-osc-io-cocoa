@@ -6,7 +6,7 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@testable import SwiftOSCIOCocoa
+/* @testable */ import SwiftOSCIOCocoa
 import Testing
 import TestingExtensions
 
