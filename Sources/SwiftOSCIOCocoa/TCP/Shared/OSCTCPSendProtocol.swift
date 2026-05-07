@@ -13,6 +13,7 @@ import SwiftOSCCore
 /// Internal protocol that TCP-based OSC classes adopt in order to send OSC packets.
 protocol _OSCTCPSendProtocol: AnyObject where Self: Sendable {
     var tcpSocket: GCDAsyncSocket { get }
+    var clientID: OSCTCPClientSessionID { get }
     var framingMode: OSCTCPFramingMode { get }
 }
 
@@ -21,39 +22,31 @@ extension _OSCTCPSendProtocol {
     ///
     /// - Parameters:
     ///   - oscPacket: OSC bundle or message.
-    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
-    ///     send to.
-    func _send(_ oscPacket: OSCPacket, clientID: OSCTCPClientSessionID) throws {
-        try _send(oscPacket.rawData(), clientID: clientID)
+    func _send(_ oscPacket: OSCPacket) throws {
+        try _send(oscPacket.rawData())
     }
 
     /// Send an OSC bundle.
     ///
     /// - Parameters:
     ///   - oscBundle: OSC bundle.
-    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
-    ///     send to.
-    func _send(_ oscBundle: OSCBundle, clientID: OSCTCPClientSessionID) throws {
-        try _send(oscBundle.rawData(), clientID: clientID)
+    func _send(_ oscBundle: OSCBundle) throws {
+        try _send(oscBundle.rawData())
     }
 
     /// Send an OSC message.
     ///
     /// - Parameters:
     ///   - oscMessage: OSC message.
-    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
-    ///     send to.
-    func _send(_ oscMessage: OSCMessage, clientID: OSCTCPClientSessionID) throws {
-        try _send(oscMessage.rawData(), clientID: clientID)
+    func _send(_ oscMessage: OSCMessage) throws {
+        try _send(oscMessage.rawData())
     }
 
     /// Send an OSC packet.
     ///
     /// - Parameters:
     ///   - oscData: Raw bytes of an OSC bundle or message.
-    ///   - clientID: Server Connection Client Session ID. Applies only to TCP server to determine which connected socket to
-    ///     send to.
-    private func _send(_ oscData: Data, clientID: OSCTCPClientSessionID) {
+    private func _send(_ oscData: Data) {
         // guard isConnected else {
         //     throw GCDAsyncUdpSocketError(
         //         .closedError,

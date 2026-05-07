@@ -61,15 +61,15 @@ extension OSCTCPServer.ClientConnection {
 
 extension OSCTCPServer.ClientConnection: _OSCTCPSendProtocol {
     func send(_ oscPacket: OSCPacket) throws {
-        try _send(oscPacket, clientID: clientID)
+        try _send(oscPacket)
     }
 
     func send(_ oscBundle: OSCBundle) throws {
-        try _send(oscBundle, clientID: clientID)
+        try _send(oscBundle)
     }
 
     func send(_ oscMessage: OSCMessage) throws {
-        try _send(oscMessage, clientID: clientID)
+        try _send(oscMessage)
     }
 }
 

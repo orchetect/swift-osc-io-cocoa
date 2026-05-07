@@ -24,6 +24,7 @@ import SwiftOSCCore
 public final class OSCTCPClient {
     let tcpSocket: GCDAsyncSocket
     let tcpDelegate: OSCTCPClientDelegate
+    let clientID: OSCTCPClientSessionID = 0
     public let queue: DispatchQueue
     public internal(set) var receiveHandler: OSCHandlerBlock?
     var notificationHandler: NotificationHandlerBlock?
@@ -127,17 +128,17 @@ extension OSCTCPClient {
 extension OSCTCPClient: _OSCTCPSendProtocol {
     /// Send an OSC bundle or message to the host.
     public func send(_ oscPacket: OSCPacket) throws {
-        try _send(oscPacket, clientID: 0)
+        try _send(oscPacket)
     }
 
     /// Send an OSC bundle to the host.
     public func send(_ oscBundle: OSCBundle) throws {
-        try _send(oscBundle, clientID: 0)
+        try _send(oscBundle)
     }
 
     /// Send an OSC message to the host.
     public func send(_ oscMessage: OSCMessage) throws {
-        try _send(oscMessage, clientID: 0)
+        try _send(oscMessage)
     }
 }
 
