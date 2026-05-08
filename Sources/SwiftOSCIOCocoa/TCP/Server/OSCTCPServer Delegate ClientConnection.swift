@@ -9,6 +9,7 @@
 @preconcurrency internal import CocoaAsyncSocket
 import Foundation
 import SwiftOSCCore
+internal import SwiftOSCIOInternals
 
 extension OSCTCPServer.Delegate {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
@@ -81,11 +82,11 @@ extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPHandlerProtocol {
     }
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPGeneratesClientNotificationsProtocol {
+extension OSCTCPServer.Delegate.ClientConnection: OSCTCPGeneratesClientNotificationsProtocol {
     // note that this is never called because when a remote connection closes, its socket does not fire
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements
-    func _generateConnectedNotification() {
+    func generateConnectedNotification() {
         delegate?.oscServer?._generateConnectedNotification(
             remoteHost: remoteHost,
             remotePort: remotePort,
@@ -96,7 +97,7 @@ extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPGeneratesClientNotifica
     // note that this is never called because when a remote connection closes, its socket does not fire
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements
-    func _generateDisconnectedNotification(error: (any Error)?) {
+    func generateDisconnectedNotification(error: (any Error)?) {
         delegate?.oscServer?._generateDisconnectedNotification(
             remoteHost: remoteHost,
             remotePort: remotePort,

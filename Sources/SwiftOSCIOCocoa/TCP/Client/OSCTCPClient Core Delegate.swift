@@ -13,7 +13,7 @@ internal import SwiftOSCIOInternals
 extension OSCTCPClient.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
-        weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesClientNotificationsProtocol)?
+        weak var oscServer: (any _OSCTCPHandlerProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
         
         // already implemented by NSObject
         // init() { }
@@ -29,7 +29,7 @@ extension OSCTCPClient.Core.Delegate: GCDAsyncSocketDelegate {
 
     func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
         // send notification
-        oscServer?._generateConnectedNotification()
+        oscServer?.generateConnectedNotification()
 
         // read initial data
         oscServer?.tcpSocket.readData(withTimeout: -1, tag: 0)
@@ -55,7 +55,7 @@ extension OSCTCPClient.Core.Delegate: GCDAsyncSocketDelegate {
         }
 
         // send notification
-        oscServer?._generateDisconnectedNotification(
+        oscServer?.generateDisconnectedNotification(
             error: error
         )
     }
