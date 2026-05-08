@@ -24,10 +24,7 @@ extension _OSCTCPSendProtocol {
     
     private func _send(_ oscData: Data) {
         // guard isConnected else {
-        //     throw GCDAsyncUdpSocketError(
-        //         .closedError,
-        //         userInfo: ["Reason": "OSC TCP client socket is not connected to a remote host."]
-        //     )
+        //     throw OSCTCPClientError.noRemoteHost
         // }
 
         // frame data
