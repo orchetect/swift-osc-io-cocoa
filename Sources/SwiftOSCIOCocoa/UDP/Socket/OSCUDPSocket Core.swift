@@ -121,7 +121,9 @@ extension OSCUDPSocket.Core {
     }
 }
 
-extension OSCUDPSocket.Core: _OSCHandlerProtocol { }
+extension OSCUDPSocket.Core: _OSCHandlerProtocol {
+    // provides implementation for dispatching incoming OSC data
+}
 
 // MARK: - Properties
 
