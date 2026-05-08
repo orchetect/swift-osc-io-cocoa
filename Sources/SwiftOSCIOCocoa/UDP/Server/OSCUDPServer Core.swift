@@ -6,7 +6,7 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@preconcurrency import CocoaAsyncSocket
+@preconcurrency internal import CocoaAsyncSocket
 import Foundation
 import SwiftOSCCore
 internal import SwiftOSCIOInternals

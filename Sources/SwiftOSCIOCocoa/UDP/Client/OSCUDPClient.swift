@@ -6,7 +6,7 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@preconcurrency import CocoaAsyncSocket
+@preconcurrency internal import CocoaAsyncSocket
 import Foundation
 
 /// Sends OSC packets over the network using the UDP network protocol.
