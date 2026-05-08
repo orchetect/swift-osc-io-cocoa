@@ -33,7 +33,6 @@ public final class OSCUDPSocket: OSCUDPSocketProtocol {
             queue: queue,
             receiveHandler: receiveHandler
         )
-        core.parent = self
     }
 
     // MARK: - Lifecycle
