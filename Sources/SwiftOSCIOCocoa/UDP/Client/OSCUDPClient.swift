@@ -6,7 +6,6 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@preconcurrency internal import CocoaAsyncSocket
 import Foundation
 
 /// Sends OSC packets over the network using the UDP network protocol.
@@ -14,8 +13,8 @@ import Foundation
 /// A single global OSC client instance created once at app startup is often all that is needed. It
 /// can be used to send OSC messages to one or more receivers on the network.
 public final class OSCUDPClient {
-    private let udpSocket = GCDAsyncUdpSocket()
-    private let udpDelegate = Delegate()
+    /// Internal operations core.
+    let core: Core
 
     /// Local UDP port used by the client from which to send OSC packets. (This is not the remote port
     /// which is specified each time a call to ``send(_:to:port:)-(OSCPacket,_,_)`` is made.)
@@ -27,13 +26,13 @@ public final class OSCUDPClient {
     /// > property may return a value of `0` until the first successful call to ``send(_:to:port:)-(OSCPacket,_,_)``
     /// > is made.
     public var localPort: UInt16 {
-        udpSocket.localPort()
+        core.localPort
     }
 
-    private var _localPort: UInt16?
-
     /// Network interface to restrict connections to.
-    public private(set) var interface: String?
+    public var interface: String? {
+        core.interface
+    }
 
     /// Enable local UDP port reuse by other processes.
     /// This property must be set prior to calling ``start()`` in order to take effect.
@@ -42,7 +41,10 @@ public final class OSCUDPClient {
     /// multiple processes to simultaneously bind to the same address & port, you need to enable
     /// this functionality in the socket. All processes that wish to use the address & port
     /// simultaneously must all enable reuse port on the socket bound to that port.
-    public var isPortReuseEnabled: Bool = false
+    public var isPortReuseEnabled: Bool {
+        get { core.isPortReuseEnabled }
+        set { core.isPortReuseEnabled = newValue }
+    }
 
     /// Enable sending IPv4 broadcast messages from the socket.
     /// This may be set at any time.
@@ -66,17 +68,14 @@ public final class OSCUDPClient {
     /// Internet Protocol version 6 (IPv6) does not implement this method of broadcast, and
     /// therefore does not define broadcast addresses. Instead, IPv6 uses multicast addressing.
     public var isIPv4BroadcastEnabled: Bool {
-        get { _isIPv4BroadcastEnabled }
-        set {
-            _isIPv4BroadcastEnabled = newValue
-            try? udpSocket.enableBroadcast(newValue)
-        }
+        get { core.isIPv4BroadcastEnabled }
+        set { core.isIPv4BroadcastEnabled = newValue }
     }
 
-    private var _isIPv4BroadcastEnabled: Bool = false
-
     /// Returns a boolean indicating whether the OSC client has been started.
-    public private(set) var isStarted: Bool = false
+    public var isStarted: Bool {
+        core.isStarted
+    }
 
     /// Initialize an OSC client to send messages using the UDP network protocol.
     ///
@@ -84,8 +83,8 @@ public final class OSCUDPClient {
     ///
     /// Using this initializer does not require calling ``start()``.
     public init() {
-        // delegate needed for local port binding and enable broadcast
-        udpSocket.setDelegate(udpDelegate, delegateQueue: .global())
+        core = Core()
+        core.parent = self
     }
 
     /// Initialize an OSC client to send messages using the UDP network protocol using a specific local port.
@@ -114,22 +113,19 @@ public final class OSCUDPClient {
     ///   - interface: Optionally specify a network interface for which to constrain communication.
     ///   - isPortReuseEnabled: Enable local UDP port reuse by other processes.
     ///   - isIPv4BroadcastEnabled: Enable sending IPv4 broadcast messages from the socket.
-    public convenience init(
+    public init(
         localPort: UInt16?,
         interface: String? = nil,
         isPortReuseEnabled: Bool = false,
         isIPv4BroadcastEnabled: Bool = false
     ) {
-        self.init()
-
-        _localPort = (localPort == nil || localPort == 0) ? nil : localPort
-        self.interface = interface
-        self.isPortReuseEnabled = isPortReuseEnabled
-        self.isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
-    }
-
-    deinit {
-        stop()
+        core = Core(
+            localPort: localPort,
+            interface: interface,
+            isPortReuseEnabled: isPortReuseEnabled,
+            isIPv4BroadcastEnabled: isIPv4BroadcastEnabled
+        )
+        core.parent = self
     }
 }
 
@@ -142,25 +138,12 @@ extension OSCUDPClient {
     /// This call is only necessary if a local port was specified at the time of class
     /// initialization or if class properties were modified after initialization.
     public func start() throws {
-        guard !isStarted else { return }
-
-        stop()
-
-        try udpSocket.enableReusePort(isPortReuseEnabled)
-        try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
-        try udpSocket.bind(
-            toPort: _localPort ?? 0, // 0 causes system to assign random open port
-            interface: interface
-        )
-
-        isStarted = true
+        try core.start()
     }
 
     /// Closes the OSC port.
     public func stop() {
-        udpSocket.close()
-
-        isStarted = false
+        core.stop()
     }
 }
 
@@ -172,19 +155,11 @@ extension OSCUDPClient {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public func send(
-        _ oscPacket: OSCPacket,
+        _ packet: OSCPacket,
         to host: String,
         port: UInt16 = 8000
     ) throws {
-        let data = try oscPacket.rawData()
-
-        udpSocket.send(
-            data,
-            toHost: host,
-            port: port,
-            withTimeout: 1.0,
-            tag: 0
-        )
+        try core.send(packet, to: host, port: port)
     }
 
     /// Send an OSC bundle ad-hoc to a recipient on the network.
@@ -192,19 +167,11 @@ extension OSCUDPClient {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public func send(
-        _ oscBundle: OSCBundle,
+        _ bundle: OSCBundle,
         to host: String,
         port: UInt16 = 8000
     ) throws {
-        let data = try oscBundle.rawData()
-
-        udpSocket.send(
-            data,
-            toHost: host,
-            port: port,
-            withTimeout: 1.0,
-            tag: 0
-        )
+        try core.send(bundle, to: host, port: port)
     }
 
     /// Send an OSC message ad-hoc to a recipient on the network.
@@ -212,19 +179,11 @@ extension OSCUDPClient {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public func send(
-        _ oscMessage: OSCMessage,
+        _ message: OSCMessage,
         to host: String,
         port: UInt16 = 8000
     ) throws {
-        let data = try oscMessage.rawData()
-
-        udpSocket.send(
-            data,
-            toHost: host,
-            port: port,
-            withTimeout: 1.0,
-            tag: 0
-        )
+        try core.send(message, to: host, port: port)
     }
 }
 
