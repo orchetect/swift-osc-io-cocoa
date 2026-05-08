@@ -100,11 +100,7 @@ extension OSCUDPSocket.Core {
 // MARK: - Communication
 
 extension OSCUDPSocket.Core {
-    func send(
-        _ packet: OSCPacket,
-        to host: String?,
-        port: UInt16?
-    ) throws {
+    func send(_ packet: OSCPacket, to host: String?, port: UInt16?) throws {
         guard isStarted else {
             throw OSCUDPClientError.notStarted
         }
@@ -122,22 +118,6 @@ extension OSCUDPSocket.Core {
             withTimeout: 1.0,
             tag: 0
         )
-    }
-    
-    func send(
-        _ bundle: OSCBundle,
-        to host: String?,
-        port: UInt16?
-    ) throws {
-        try send(.bundle(bundle), to: host, port: port)
-    }
-    
-    func send(
-        _ message: OSCMessage,
-        to host: String?,
-        port: UInt16?
-    ) throws {
-        try send(.message(message), to: host, port: port)
     }
 }
 
