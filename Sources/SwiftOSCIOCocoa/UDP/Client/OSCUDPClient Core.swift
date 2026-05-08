@@ -13,7 +13,6 @@ extension OSCUDPClient {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCUDPClient
-        weak var parent: Parent?
         
         private let udpSocket = GCDAsyncUdpSocket()
         private let udpDelegate = Delegate()
@@ -40,10 +39,10 @@ extension OSCUDPClient {
         private(set) var isStarted: Bool = false
         
         init(
-            localPort: UInt16? = nil,
-            interface: String? = nil,
-            isPortReuseEnabled: Bool = false,
-            isIPv4BroadcastEnabled: Bool = false
+            localPort: UInt16?,
+            interface: String?,
+            isPortReuseEnabled: Bool,
+            isIPv4BroadcastEnabled: Bool
         ) {
             udpSocket.setDelegate(udpDelegate, delegateQueue: .global())
             
@@ -89,44 +88,8 @@ extension OSCUDPClient.Core {
 // MARK: - Communication
 
 extension OSCUDPClient.Core {
-    func send(
-        _ packet: OSCPacket,
-        to host: String,
-        port: UInt16
-    ) throws {
+    func send(_ packet: OSCPacket, to host: String, port: UInt16) throws {
         let data = try packet.rawData()
-        
-        udpSocket.send(
-            data,
-            toHost: host,
-            port: port,
-            withTimeout: 1.0,
-            tag: 0
-        )
-    }
-    
-    func send(
-        _ bundle: OSCBundle,
-        to host: String,
-        port: UInt16
-    ) throws {
-        let data = try bundle.rawData()
-        
-        udpSocket.send(
-            data,
-            toHost: host,
-            port: port,
-            withTimeout: 1.0,
-            tag: 0
-        )
-    }
-    
-    func send(
-        _ message: OSCMessage,
-        to host: String,
-        port: UInt16
-    ) throws {
-        let data = try message.rawData()
         
         udpSocket.send(
             data,
