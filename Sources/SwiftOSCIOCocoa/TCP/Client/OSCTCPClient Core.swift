@@ -1,5 +1,5 @@
 //
-//  CocoaOSCTCPClient Core.swift
+//  OSCTCPClient Core.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -10,10 +10,10 @@
 import Foundation
 internal import SwiftOSCIOInternals
 
-extension CocoaOSCTCPClient {
+extension OSCTCPClient {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
-        typealias Wrapper = CocoaOSCTCPClient
+        typealias Wrapper = OSCTCPClient
         
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Delegate
@@ -56,11 +56,11 @@ extension CocoaOSCTCPClient {
     }
 }
 
-extension CocoaOSCTCPClient.Core: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPClient.Core: @unchecked Sendable { } // TODO: unchecked
 
 // MARK: - Lifecycle
 
-extension CocoaOSCTCPClient.Core {
+extension OSCTCPClient.Core {
     func connect(timeout: TimeInterval = 5.0) throws {
         try tcpSocket.connect(
             toHost: remoteHost,
@@ -77,11 +77,11 @@ extension CocoaOSCTCPClient.Core {
 
 // MARK: - Communication
 
-extension CocoaOSCTCPClient.Core: _OSCTCPHandlerProtocol {
+extension OSCTCPClient.Core: _OSCTCPHandlerProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 
-extension CocoaOSCTCPClient.Core: _OSCTCPSendProtocol {
+extension OSCTCPClient.Core: _OSCTCPSendProtocol {
     // provides implementation for sending OSC data
     
     func send(_ packet: OSCPacket) throws {
@@ -89,7 +89,7 @@ extension CocoaOSCTCPClient.Core: _OSCTCPSendProtocol {
     }
 }
 
-extension CocoaOSCTCPClient.Core: _OSCTCPGeneratesClientNotificationsProtocol {
+extension OSCTCPClient.Core: _OSCTCPGeneratesClientNotificationsProtocol {
     func _generateConnectedNotification() {
         let notif: Wrapper.Notification = .connected
         notificationHandler?(notif)
@@ -103,7 +103,7 @@ extension CocoaOSCTCPClient.Core: _OSCTCPGeneratesClientNotificationsProtocol {
 
 // MARK: - Properties
 
-extension CocoaOSCTCPClient.Core {
+extension OSCTCPClient.Core {
     var isConnected: Bool {
         tcpSocket.isConnected
     }
