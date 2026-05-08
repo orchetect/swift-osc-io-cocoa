@@ -15,7 +15,6 @@ extension OSCUDPServer {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCUDPServer
-        weak var parent: Parent?
         
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Delegate()

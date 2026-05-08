@@ -29,7 +29,6 @@ public final class OSCUDPServer: OSCUDPServerProtocol {
             queue: queue,
             receiveHandler: receiveHandler
         )
-        core.parent = self
     }
 
     // MARK: - Lifecycle
