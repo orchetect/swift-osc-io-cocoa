@@ -87,7 +87,7 @@ extension OSCTCPServer.Delegate.ClientConnection: OSCTCPGeneratesClientNotificat
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements
     func generateConnectedNotification() {
-        delegate?.oscServer?._generateConnectedNotification(
+        delegate?.oscServer?.generateConnectedNotification(
             remoteHost: remoteHost,
             remotePort: remotePort,
             clientID: clientID
@@ -98,7 +98,7 @@ extension OSCTCPServer.Delegate.ClientConnection: OSCTCPGeneratesClientNotificat
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements
     func generateDisconnectedNotification(error: (any Error)?) {
-        delegate?.oscServer?._generateDisconnectedNotification(
+        delegate?.oscServer?.generateDisconnectedNotification(
             remoteHost: remoteHost,
             remotePort: remotePort,
             clientID: clientID,

@@ -109,13 +109,13 @@ extension OSCTCPServer.Core: _OSCTCPHandlerProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 
-extension OSCTCPServer.Core: _OSCTCPGeneratesServerNotificationsProtocol {
-    func _generateConnectedNotification(remoteHost: String, remotePort: UInt16, clientID: OSCTCPClientSessionID) {
+extension OSCTCPServer.Core: OSCTCPGeneratesServerNotificationsProtocol {
+    func generateConnectedNotification(remoteHost: String, remotePort: UInt16, clientID: OSCTCPClientSessionID) {
         let notif: Parent.Notification = .connected(remoteHost: remoteHost, remotePort: remotePort, clientID: clientID)
         notificationHandler?(notif)
     }
     
-    func _generateDisconnectedNotification(
+    func generateDisconnectedNotification(
         remoteHost: String,
         remotePort: UInt16,
         clientID: OSCTCPClientSessionID,

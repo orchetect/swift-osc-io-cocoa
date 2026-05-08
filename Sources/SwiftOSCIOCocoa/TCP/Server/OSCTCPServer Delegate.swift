@@ -8,11 +8,12 @@
 
 @preconcurrency internal import CocoaAsyncSocket
 import Foundation
+internal import SwiftOSCIOInternals
 
 extension OSCTCPServer {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
-        weak var oscServer: (any _OSCTCPHandlerProtocol & _OSCTCPGeneratesServerNotificationsProtocol)?
+        weak var oscServer: (any _OSCTCPHandlerProtocol & OSCTCPGeneratesServerNotificationsProtocol)?
         let framingMode: OSCTCPFramingMode
         
         /// Currently connected client sessions.
@@ -48,7 +49,7 @@ extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
         newSocket.delegate = self
 
         // send notification
-        oscServer?._generateConnectedNotification(
+        oscServer?.generateConnectedNotification(
             remoteHost: newSocket.connectedHost ?? "",
             remotePort: newSocket.connectedPort,
             clientID: clientID
@@ -100,7 +101,7 @@ extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
         // note that sock.connectedHost will be nil, and sock.connectedPort will be 0
         // so we need to grab host/port from the local clients info
         for (clientID, host, port) in disconnectedClients {
-            oscServer?._generateDisconnectedNotification(
+            oscServer?.generateDisconnectedNotification(
                 remoteHost: host,
                 remotePort: port,
                 clientID: clientID,
