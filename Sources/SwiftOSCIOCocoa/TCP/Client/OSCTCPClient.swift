@@ -32,13 +32,9 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
             receiveHandler: receiveHandler
         )
     }
-}
 
-extension OSCTCPClient: Sendable { }
+    // MARK: - Lifecycle
 
-// MARK: - Lifecycle
-
-extension OSCTCPClient {
     public func connect(timeout: TimeInterval) throws {
         try core.connect(timeout: timeout)
     }
@@ -46,19 +42,15 @@ extension OSCTCPClient {
     public func close() {
         core.close()
     }
-}
 
-// MARK: - Communication
+    // MARK: - Communication
 
-extension OSCTCPClient {
     public func send(_ packet: OSCPacket) throws {
         try core.send(packet)
     }
-}
 
-// MARK: - Properties
+    // MARK: - Properties
 
-extension OSCTCPClient {
     public var timeTagMode: OSCTimeTagMode {
         get { core.timeTagMode }
         set { core.timeTagMode = newValue }
@@ -92,5 +84,7 @@ extension OSCTCPClient {
         core.setNotificationHandler(handler)
     }
 }
+
+extension OSCTCPClient: Sendable { }
 
 #endif
