@@ -23,18 +23,22 @@ import SwiftOSCCore
 /// example: if an OSC message was sent from port 8000 to the X32's port 10023, the X32 will respond
 /// by sending OSC messages back to you on port 8000.
 public final class OSCUDPSocket {
-    let udpSocket: GCDAsyncUdpSocket
-    let udpDelegate = OSCUDPServer.Delegate()
-    public let queue: DispatchQueue
-    public internal(set) var receiveHandler: OSCHandlerBlock?
+    /// Internal operations core.
+    let core: Core
 
     /// Time tag mode. Determines how OSC bundle time tags are handled.
-    public var timeTagMode: OSCTimeTagMode
+    public var timeTagMode: OSCTimeTagMode {
+        get { core.timeTagMode }
+        set { core.timeTagMode = newValue }
+    }
 
     /// Remote network hostname.
     /// If non-nil, this host will be used in calls to ``send(_:to:port:)-(OSCPacket,_,_)``. The host may still be
     /// overridden using the `host` parameter in the call to ``send(_:to:port:)-(OSCPacket,_,_)``..
-    public var remoteHost: String?
+    public var remoteHost: String? {
+        get { core.remoteHost }
+        set { core.remoteHost = newValue }
+    }
 
     /// Local UDP port used to both send OSC packets from and listen for incoming packets.
     /// This may only be set at the time of initialization.
@@ -48,10 +52,8 @@ public final class OSCUDPSocket {
     /// > property may return a value of `0` until the first successful call to ``send(_:to:port:)-(OSCPacket,_,_)``
     /// > is made.
     public var localPort: UInt16 {
-        udpSocket.localPort()
+        core.localPort
     }
-
-    private var _localPort: UInt16?
 
     /// UDP port used by to send OSC packets. This may be set at any time.
     /// This port will be used in calls to ``send(_:to:port:)-(OSCPacket,_,_)``. The port may still be overridden
@@ -60,14 +62,14 @@ public final class OSCUDPSocket {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public var remotePort: UInt16 {
-        get { _remotePort ?? localPort }
-        set { _remotePort = (newValue == 0) ? nil : newValue }
+        get { core.remotePort }
+        set { core.remotePort = newValue }
     }
 
-    private var _remotePort: UInt16?
-
     /// Network interface to restrict connections to.
-    public private(set) var interface: String?
+    public var interface: String? {
+        core.interface
+    }
 
     /// Enable sending IPv4 broadcast messages from the socket.
     ///
@@ -89,10 +91,14 @@ public final class OSCUDPSocket {
     ///
     /// Internet Protocol version 6 (IPv6) does not implement this method of broadcast, and
     /// therefore does not define broadcast addresses. Instead, IPv6 uses multicast addressing.
-    public let isIPv4BroadcastEnabled: Bool
+    public var isIPv4BroadcastEnabled: Bool {
+        core.isIPv4BroadcastEnabled
+    }
 
     /// Returns a boolean indicating whether the OSC socket has been started.
-    public private(set) var isStarted: Bool = false
+    public var isStarted: Bool {
+        core.isStarted
+    }
 
     /// Initialize with a remote hostname and UDP port.
     ///
@@ -123,45 +129,33 @@ public final class OSCUDPSocket {
         queue: DispatchQueue? = nil,
         receiveHandler: OSCHandlerBlock? = nil
     ) {
-        self.remoteHost = remoteHost
-        _localPort = (localPort == nil || localPort == 0) ? nil : localPort
-        _remotePort = (remotePort == nil || remotePort == 0) ? nil : remotePort
-        self.interface = interface
-        self.timeTagMode = timeTagMode
-        self.isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPSocket.queue")
-        self.queue = queue
-        self.receiveHandler = receiveHandler
-
-        udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: queue, socketQueue: nil)
-        udpDelegate.oscServer = self
+        core = Core(
+            localPort: localPort,
+            remoteHost: remoteHost,
+            remotePort: remotePort,
+            interface: interface,
+            timeTagMode: timeTagMode,
+            isIPv4BroadcastEnabled: isIPv4BroadcastEnabled,
+            queue: queue,
+            receiveHandler: receiveHandler
+        )
+        core.parent = self
     }
 }
 
-extension OSCUDPSocket: @unchecked Sendable { }
+extension OSCUDPSocket: Sendable { }
 
 // MARK: - Lifecycle
 
 extension OSCUDPSocket {
     /// Bind the local UDP port and begin listening for OSC packets.
     public func start() throws {
-        guard !isStarted else { return }
-
-        try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
-        try udpSocket.bind(
-            toPort: _localPort ?? 0, // 0 causes system to assign random open port
-            interface: interface
-        )
-        try udpSocket.beginReceiving()
-
-        isStarted = true
+        try core.start()
     }
 
     /// Stops listening for data and closes the OSC port.
     public func stop() {
-        udpSocket.close()
-
-        isStarted = false
+        core.stop()
     }
 }
 
@@ -175,36 +169,11 @@ extension OSCUDPSocket {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public func send(
-        _ oscPacket: OSCPacket,
+        _ packet: OSCPacket,
         to host: String? = nil,
         port: UInt16? = nil
     ) throws {
-        guard isStarted else {
-            throw GCDAsyncUdpSocketError(
-                .closedError,
-                userInfo: ["Reason": "OSC socket has not been started yet."]
-            )
-        }
-
-        guard let toHost = host ?? remoteHost else {
-            throw GCDAsyncUdpSocketError(
-                .badParamError,
-                userInfo: [
-                    "Reason":
-                        "Remote host is not specified in OSCUDPSocket.remoteHost property or in host parameter in call to send()."
-                ]
-            )
-        }
-
-        let data = try oscPacket.rawData()
-
-        udpSocket.send(
-            data,
-            toHost: toHost,
-            port: port ?? remotePort,
-            withTimeout: 1.0,
-            tag: 0
-        )
+        try core.send(packet, to: host, port: port)
     }
 
     /// Send an OSC bundle to the remote host.
@@ -214,11 +183,11 @@ extension OSCUDPSocket {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public func send(
-        _ oscBundle: OSCBundle,
+        _ bundle: OSCBundle,
         to host: String? = nil,
         port: UInt16? = nil
     ) throws {
-        try send(.bundle(oscBundle), to: host, port: port)
+        try send(.bundle(bundle), to: host, port: port)
     }
 
     /// Send an OSC message to the remote host.
@@ -228,27 +197,21 @@ extension OSCUDPSocket {
     /// The default port for OSC communication is 8000 but may change depending on device/software
     /// manufacturer.
     public func send(
-        _ oscMessage: OSCMessage,
+        _ message: OSCMessage,
         to host: String? = nil,
         port: UInt16? = nil
     ) throws {
-        try send(.message(oscMessage), to: host, port: port)
+        try send(.message(message), to: host, port: port)
     }
 }
-
-extension OSCUDPSocket: _OSCHandlerProtocol { }
 
 // MARK: - Properties
 
 extension OSCUDPSocket {
     /// Set the receive handler closure.
     /// This closure will be called when OSC bundles or messages are received.
-    public func setReceiveHandler(
-        _ handler: OSCHandlerBlock?
-    ) {
-        queue.async {
-            self.receiveHandler = handler
-        }
+    public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+        core.setReceiveHandler(handler)
     }
 }
 
