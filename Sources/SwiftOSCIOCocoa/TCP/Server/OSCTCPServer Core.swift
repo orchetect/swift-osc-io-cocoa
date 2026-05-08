@@ -88,20 +88,27 @@ extension OSCTCPServer.Core {
 // MARK: - Communication
 
 extension OSCTCPServer.Core {
-    func _send(_ oscPacket: OSCPacket, toClientID clientID: OSCTCPClientSessionID) throws {
+    func send(
+        _ packet: OSCPacket,
+        toClientIDs clientIDs: [OSCTCPClientSessionID]?,
+        errorHandler: ((_ clientID: OSCTCPClientSessionID, _ error: any Error) -> Void)?
+    ) {
+        let clientIDs = Array(tcpDelegate.clients.keys)
+        for clientID in clientIDs {
+            do {
+                try send(packet, toClientID: clientID)
+            } catch {
+                errorHandler?(clientID, error)
+            }
+        }
+    }
+    
+    func send(_ packet: OSCPacket, toClientID clientID: OSCTCPClientSessionID) throws {
         guard let connection = tcpDelegate.clients[clientID] else {
             throw OSCTCPServerError.clientNotFound(clientID: clientID)
         }
         
-        try connection._send(oscPacket)
-    }
-    
-    func _send(_ oscBundle: OSCBundle, toClientID clientID: OSCTCPClientSessionID) throws {
-        try _send(.bundle(oscBundle), toClientID: clientID)
-    }
-    
-    func _send(_ oscMessage: OSCMessage, toClientID clientID: OSCTCPClientSessionID) throws {
-        try _send(.message(oscMessage), toClientID: clientID)
+        try connection._send(packet)
     }
 }
 

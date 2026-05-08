@@ -50,15 +50,16 @@ extension OSCTCPServer {
 // MARK: - Communication
 
 extension OSCTCPServer {
-    public func send(_ oscPacket: OSCPacket) throws {
-        let clientIDs = Array(core.tcpDelegate.clients.keys)
-        try send(oscPacket, toClientIDs: clientIDs)
+    public func send(_ packet: OSCPacket, toClientID clientID: OSCTCPClientSessionID) throws {
+        try core.send(packet, toClientID: clientID)
     }
-
-    public func send(_ oscPacket: OSCPacket, toClientIDs clientIDs: [OSCTCPClientSessionID]) throws {
-        for clientID in clientIDs {
-            try core._send(oscPacket, toClientID: clientID)
-        }
+    
+    public func send(
+        _ packet: OSCPacket,
+        toClientIDs clientIDs: [OSCTCPClientSessionID]?,
+        errorHandler: ((_ clientID: OSCTCPClientSessionID, _ error: any Error) -> Void)?
+    ) {
+        core.send(packet, toClientIDs: clientIDs, errorHandler: errorHandler)
     }
 }
 

@@ -8,6 +8,7 @@
 
 @preconcurrency internal import CocoaAsyncSocket
 import Foundation
+import SwiftOSCCore
 internal import SwiftOSCIOInternals
 
 extension OSCTCPClient {
