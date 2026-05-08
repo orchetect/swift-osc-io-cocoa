@@ -6,10 +6,8 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
-@preconcurrency import CocoaAsyncSocket
 import Foundation
 import SwiftOSCCore
-internal import SwiftOSCIOInternals
 
 /// Receives OSC packets from the network on a specific UDP listen port.
 ///
@@ -17,24 +15,25 @@ internal import SwiftOSCIOInternals
 /// on a specific local port. The default OSC port is 8000 but it may be set to any open port if
 /// desired.
 public final class OSCUDPServer {
-    let udpSocket: GCDAsyncUdpSocket
-    let udpDelegate = Delegate()
-    let queue: DispatchQueue
-    var receiveHandler: OSCHandlerBlock?
-
+    /// Internal operations core.
+    let core: Core
+    
     /// Time tag mode. Determines how OSC bundle time tags are handled.
-    public var timeTagMode: OSCTimeTagMode
+    public var timeTagMode: OSCTimeTagMode {
+        get { core.timeTagMode }
+        set { core.timeTagMode = newValue }
+    }
 
     /// UDP port used by the OSC server to listen for inbound OSC packets.
     /// This may only be set at the time of initialization.
     public var localPort: UInt16 {
-        udpSocket.localPort()
+        core.udpSocket.localPort()
     }
 
-    private var _localPort: UInt16?
-
     /// Network interface to restrict connections to.
-    public private(set) var interface: String?
+    public var interface: String? {
+        core.interface
+    }
 
     /// Enable local UDP port reuse by other processes.
     /// This property must be set prior to calling ``start()`` in order to take effect.
@@ -47,10 +46,15 @@ public final class OSCUDPServer {
     /// Due to limitations of `SO_REUSEPORT` on Apple platforms, enabling this only permits receipt of broadcast
     /// or multicast messages for any additional sockets which bind to the same address and port. Unicast
     /// messages are only received by the first socket to bind.
-    public var isPortReuseEnabled: Bool = false
+    public var isPortReuseEnabled: Bool {
+        get { core.isPortReuseEnabled }
+        set { core.isPortReuseEnabled = newValue }
+    }
 
     /// Returns a boolean indicating whether the OSC server has been started.
-    public private(set) var isStarted: Bool = false
+    public var isStarted: Bool {
+        core.isStarted
+    }
 
     /// Initialize an OSC server.
     ///
@@ -78,52 +82,32 @@ public final class OSCUDPServer {
         queue: DispatchQueue? = nil,
         receiveHandler: OSCHandlerBlock? = nil
     ) {
-        _localPort = (port == nil || port == 0) ? nil : port
-        self.interface = interface
-        self.isPortReuseEnabled = isPortReuseEnabled
-        self.timeTagMode = timeTagMode
-        let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue")
-        self.queue = queue
-        self.receiveHandler = receiveHandler
-
-        udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: queue, socketQueue: nil)
-        udpDelegate.oscServer = self
+        core = Core(
+            port: port,
+            interface: interface,
+            isPortReuseEnabled: isPortReuseEnabled,
+            timeTagMode: timeTagMode,
+            queue: queue,
+            receiveHandler: receiveHandler
+        )
+        core.parent = self
     }
 }
 
-extension OSCUDPServer: @unchecked Sendable { }
+extension OSCUDPServer: Sendable { }
 
 // MARK: - Lifecycle
 
 extension OSCUDPServer {
     /// Bind the local UDP port and begin listening for OSC packets.
     public func start() throws {
-        guard !isStarted else { return }
-
-        stop()
-
-        try udpSocket.enableReusePort(isPortReuseEnabled)
-        try udpSocket.bind(
-            toPort: _localPort ?? 0, // 0 causes system to assign random open port
-            interface: interface
-        )
-        try udpSocket.beginReceiving()
-
-        isStarted = true
+        try core.start()
     }
 
     /// Stops listening for data and closes the OSC server port.
     public func stop() {
-        udpSocket.close()
-
-        isStarted = false
+        core.stop()
     }
-}
-
-// MARK: - Communication
-
-extension OSCUDPServer: _OSCHandlerProtocol {
-    // provides implementation for dispatching incoming OSC data
 }
 
 // MARK: - Properties
@@ -131,12 +115,8 @@ extension OSCUDPServer: _OSCHandlerProtocol {
 extension OSCUDPServer {
     /// Set the receive handler closure.
     /// This closure will be called when OSC bundles or messages are received.
-    public func setReceiveHandler(
-        _ handler: OSCHandlerBlock?
-    ) {
-        queue.async {
-            self.receiveHandler = handler
-        }
+    public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+        core.setReceiveHandler(handler)
     }
 }
 
