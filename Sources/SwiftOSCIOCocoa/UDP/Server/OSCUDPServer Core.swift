@@ -69,10 +69,7 @@ extension OSCUDPServer.Core {
             interface: interface
         )
         try udpSocket.beginReceiving()
-        
-        // update local port if it has changed or been assigned by the system
-        _localPort = udpSocket.localPort()
-        
+
         isStarted = true
     }
 

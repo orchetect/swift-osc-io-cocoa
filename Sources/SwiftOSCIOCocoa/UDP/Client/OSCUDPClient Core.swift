@@ -75,10 +75,7 @@ extension OSCUDPClient.Core {
             toPort: _localPort ?? 0, // 0 causes system to assign random open port
             interface: interface
         )
-        
-        // update local port if it has changed or been assigned by the system
-        _localPort = udpSocket.localPort()
-        
+
         isStarted = true
     }
     
