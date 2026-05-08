@@ -29,7 +29,6 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
             queue: queue,
             receiveHandler: receiveHandler
         )
-        core.parent = self
     }
 }
 

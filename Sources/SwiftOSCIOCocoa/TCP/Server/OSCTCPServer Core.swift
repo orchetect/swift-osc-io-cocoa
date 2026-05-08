@@ -15,7 +15,6 @@ extension OSCTCPServer {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCTCPServer
-        weak var parent: Parent?
         
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Parent.Delegate
