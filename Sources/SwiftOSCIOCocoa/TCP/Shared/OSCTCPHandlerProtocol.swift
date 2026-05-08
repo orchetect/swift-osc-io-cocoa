@@ -17,7 +17,7 @@ protocol _OSCTCPHandlerProtocol: OSCTCPHandlerProtocol {
 }
 
 extension _OSCTCPHandlerProtocol {
-    func _handle(receivedData data: Data, on sock: GCDAsyncSocket /* , tag: Int */) {
+    func _handle(receivedData data: Data, on sock: GCDAsyncSocket) {
         let remoteHost = sock.connectedHost ?? ""
         let remotePort = sock.connectedPort
         
