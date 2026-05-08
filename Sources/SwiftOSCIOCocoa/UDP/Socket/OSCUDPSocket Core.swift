@@ -18,7 +18,7 @@ extension OSCUDPSocket {
         weak var parent: Parent?
         
         let udpSocket: GCDAsyncUdpSocket
-        let udpDelegate = OSCUDPServer.Delegate()
+        let udpDelegate = Parent.Delegate()
         let queue: DispatchQueue
         var receiveHandler: OSCHandlerBlock?
         
@@ -87,7 +87,7 @@ extension OSCUDPSocket.Core {
             interface: interface
         )
         try udpSocket.beginReceiving()
-        
+
         isStarted = true
     }
     
