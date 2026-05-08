@@ -22,6 +22,9 @@ extension OSCUDPServer {
         var receiveHandler: OSCHandlerBlock?
         
         var timeTagMode: OSCTimeTagMode
+        var localPort: UInt16 {
+            udpSocket.localPort()
+        }
         private var _localPort: UInt16?
         private(set) var interface: String?
         var isPortReuseEnabled: Bool = false

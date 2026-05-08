@@ -49,7 +49,7 @@ public final class OSCUDPServer: OSCUDPServerProtocol {
     }
     
     public var localPort: UInt16 {
-        core.udpSocket.localPort()
+        core.localPort
     }
     
     public var interface: String? {
