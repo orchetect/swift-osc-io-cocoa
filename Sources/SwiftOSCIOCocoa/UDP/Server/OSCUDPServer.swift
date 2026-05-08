@@ -17,44 +17,6 @@ import SwiftOSCCore
 public final class OSCUDPServer {
     /// Internal operations core.
     let core: Core
-    
-    /// Time tag mode. Determines how OSC bundle time tags are handled.
-    public var timeTagMode: OSCTimeTagMode {
-        get { core.timeTagMode }
-        set { core.timeTagMode = newValue }
-    }
-
-    /// UDP port used by the OSC server to listen for inbound OSC packets.
-    /// This may only be set at the time of initialization.
-    public var localPort: UInt16 {
-        core.udpSocket.localPort()
-    }
-
-    /// Network interface to restrict connections to.
-    public var interface: String? {
-        core.interface
-    }
-
-    /// Enable local UDP port reuse by other processes.
-    /// This property must be set prior to calling ``start()`` in order to take effect.
-    ///
-    /// By default, only one socket can be bound to a given IP address & port combination at a time. To enable
-    /// multiple processes to simultaneously bind to the same address & port, you need to enable
-    /// this functionality in the socket. All processes that wish to use the address & port
-    /// simultaneously must all enable reuse port on the socket bound to that port.
-    ///
-    /// Due to limitations of `SO_REUSEPORT` on Apple platforms, enabling this only permits receipt of broadcast
-    /// or multicast messages for any additional sockets which bind to the same address and port. Unicast
-    /// messages are only received by the first socket to bind.
-    public var isPortReuseEnabled: Bool {
-        get { core.isPortReuseEnabled }
-        set { core.isPortReuseEnabled = newValue }
-    }
-
-    /// Returns a boolean indicating whether the OSC server has been started.
-    public var isStarted: Bool {
-        core.isStarted
-    }
 
     /// Initialize an OSC server.
     ///
@@ -113,6 +75,44 @@ extension OSCUDPServer {
 // MARK: - Properties
 
 extension OSCUDPServer {
+    /// Time tag mode. Determines how OSC bundle time tags are handled.
+    public var timeTagMode: OSCTimeTagMode {
+        get { core.timeTagMode }
+        set { core.timeTagMode = newValue }
+    }
+    
+    /// UDP port used by the OSC server to listen for inbound OSC packets.
+    /// This may only be set at the time of initialization.
+    public var localPort: UInt16 {
+        core.udpSocket.localPort()
+    }
+    
+    /// Network interface to restrict connections to.
+    public var interface: String? {
+        core.interface
+    }
+    
+    /// Enable local UDP port reuse by other processes.
+    /// This property must be set prior to calling ``start()`` in order to take effect.
+    ///
+    /// By default, only one socket can be bound to a given IP address & port combination at a time. To enable
+    /// multiple processes to simultaneously bind to the same address & port, you need to enable
+    /// this functionality in the socket. All processes that wish to use the address & port
+    /// simultaneously must all enable reuse port on the socket bound to that port.
+    ///
+    /// Due to limitations of `SO_REUSEPORT` on Apple platforms, enabling this only permits receipt of broadcast
+    /// or multicast messages for any additional sockets which bind to the same address and port. Unicast
+    /// messages are only received by the first socket to bind.
+    public var isPortReuseEnabled: Bool {
+        get { core.isPortReuseEnabled }
+        set { core.isPortReuseEnabled = newValue }
+    }
+    
+    /// Returns a boolean indicating whether the OSC server has been started.
+    public var isStarted: Bool {
+        core.isStarted
+    }
+    
     /// Set the receive handler closure.
     /// This closure will be called when OSC bundles or messages are received.
     public func setReceiveHandler(_ handler: OSCHandlerBlock?) {

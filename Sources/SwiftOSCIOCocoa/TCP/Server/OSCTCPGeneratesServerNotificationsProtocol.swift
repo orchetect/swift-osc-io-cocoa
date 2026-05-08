@@ -6,6 +6,7 @@
 
 #if canImport(Darwin) && !os(watchOS)
 
+// TODO: move to SwiftCoreIOInternals
 protocol _OSCTCPGeneratesServerNotificationsProtocol {
     func _generateConnectedNotification(
         remoteHost: String,

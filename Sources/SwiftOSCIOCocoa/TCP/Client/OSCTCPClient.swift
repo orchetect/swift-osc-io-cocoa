@@ -30,37 +30,6 @@ public final class OSCTCPClient {
     /// Notification handler closure.
     public typealias NotificationHandlerBlock = @Sendable (_ notification: Notification) -> Void
 
-    /// Time tag mode. Determines how OSC bundle time tags are handled.
-    public var timeTagMode: OSCTimeTagMode {
-        get { core.timeTagMode }
-        set { core.timeTagMode = newValue }
-    }
-
-    /// Remote network hostname.
-    public var remoteHost: String {
-        core.remoteHost
-    }
-
-    /// Remote network port.
-    public var remotePort: UInt16 {
-        core.remotePort
-    }
-
-    /// Network interface to restrict connections to.
-    public var interface: String? {
-        core.interface
-    }
-
-    /// Returns a boolean indicating whether the OSC socket is connected to the remote host.
-    public var isConnected: Bool {
-        core.tcpSocket.isConnected
-    }
-
-    /// TCP packet framing mode.
-    public var framingMode: OSCTCPFramingMode {
-        core.framingMode
-    }
-
     /// Initialize with a remote hostname and UDP port.
     ///
     /// > Note:
@@ -140,6 +109,37 @@ extension OSCTCPClient {
 // MARK: - Properties
 
 extension OSCTCPClient {
+    /// Time tag mode. Determines how OSC bundle time tags are handled.
+    public var timeTagMode: OSCTimeTagMode {
+        get { core.timeTagMode }
+        set { core.timeTagMode = newValue }
+    }
+    
+    /// Remote network hostname.
+    public var remoteHost: String {
+        core.remoteHost
+    }
+    
+    /// Remote network port.
+    public var remotePort: UInt16 {
+        core.remotePort
+    }
+    
+    /// Network interface to restrict connections to.
+    public var interface: String? {
+        core.interface
+    }
+    
+    /// Returns a boolean indicating whether the OSC socket is connected to the remote host.
+    public var isConnected: Bool {
+        core.tcpSocket.isConnected
+    }
+    
+    /// TCP packet framing mode.
+    public var framingMode: OSCTCPFramingMode {
+        core.framingMode
+    }
+    
     /// Set the receive handler closure.
     /// This closure will be called when OSC bundles or messages are received.
     public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
