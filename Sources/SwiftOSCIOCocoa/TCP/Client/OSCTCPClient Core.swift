@@ -14,14 +14,14 @@ internal import SwiftOSCIOInternals
 extension OSCTCPClient {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
-        typealias Wrapper = OSCTCPClient
+        typealias Parent = OSCTCPClient
         
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
         var receiveHandler: OSCHandlerBlock?
-        var notificationHandler: Wrapper.NotificationHandlerBlock?
+        var notificationHandler: Parent.NotificationHandlerBlock?
         var timeTagMode: OSCTimeTagMode
         let remoteHost: String
         let remotePort: UInt16
@@ -92,12 +92,12 @@ extension OSCTCPClient.Core: _OSCTCPSendProtocol {
 
 extension OSCTCPClient.Core: OSCTCPGeneratesClientNotificationsProtocol {
     func generateConnectedNotification() {
-        let notif: Wrapper.Notification = .connected
+        let notif: Parent.Notification = .connected
         notificationHandler?(notif)
     }
     
     func generateDisconnectedNotification(error: (any Error)?) {
-        let notif: Wrapper.Notification = .disconnected(error: error)
+        let notif: Parent.Notification = .disconnected(error: error)
         notificationHandler?(notif)
     }
 }
@@ -115,7 +115,7 @@ extension OSCTCPClient.Core {
         }
     }
     
-    func setNotificationHandler(_ handler: Wrapper.NotificationHandlerBlock?) {
+    func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
         queue.async {
             self.notificationHandler = handler
         }
