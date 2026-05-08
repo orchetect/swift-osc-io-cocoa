@@ -1,5 +1,5 @@
 //
-//  OSCUDPClientDelegate.swift
+//  OSCUDPClient Delegate.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -10,12 +10,14 @@
 import Foundation
 import SwiftOSCCore
 
-final class OSCUDPClientDelegate: NSObject { }
+extension OSCUDPClient {
+    final class Delegate: NSObject { }
+}
 
-extension OSCUDPClientDelegate: GCDAsyncUdpSocketDelegate {
+extension OSCUDPClient.Delegate: GCDAsyncUdpSocketDelegate {
     // we don't care about handling any delegate methods here so none are overridden
 }
 
-extension OSCUDPClientDelegate: Sendable { }
+extension OSCUDPClient.Delegate: Sendable { }
 
 #endif

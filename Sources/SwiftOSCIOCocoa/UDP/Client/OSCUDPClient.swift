@@ -15,7 +15,7 @@ import Foundation
 /// can be used to send OSC messages to one or more receivers on the network.
 public final class OSCUDPClient {
     private let udpSocket = GCDAsyncUdpSocket()
-    private let udpDelegate = OSCUDPClientDelegate()
+    private let udpDelegate = Delegate()
 
     /// Local UDP port used by the client from which to send OSC packets. (This is not the remote port
     /// which is specified each time a call to ``send(_:to:port:)-(OSCPacket,_,_)`` is made.)
