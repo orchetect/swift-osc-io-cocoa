@@ -208,8 +208,9 @@ struct OSCTCPServer_Tests {
         let srcLocSendToClient: SourceLocation = #_sourceLocation
         DispatchQueue.global().async {
             for message in sourceMessages {
-                do { try server.send(message) }
-                catch { Issue.record(error, sourceLocation: srcLocSendToClient) }
+                server.send(message) { clientID, error in
+                    Issue.record(error, sourceLocation: srcLocSendToClient)
+                }
             }
         }
 
@@ -397,7 +398,7 @@ struct OSCTCPServer_Tests {
         // test server -> client 1
 
         let msgA = OSCMessage("/a")
-        try server.send(msgA, toClientIDs: [client1ID])
+        server.send(msgA, toClientIDs: [client1ID]) { clientID, error in Issue.record(error) }
         await wait(expect: { await client1Receiver.messages == [msgA] }, timeout: isStable ? 1.0 : 10.0)
         try await Task.sleep(seconds: isStable ? 0.5 : 5.0) // allow time for any errant messages
         #expect(await serverReceiver.messages == [])
@@ -410,7 +411,7 @@ struct OSCTCPServer_Tests {
         // test server -> client 2
 
         let msgB = OSCMessage("/b")
-        try server.send(msgB, toClientIDs: [client2ID])
+        server.send(msgB, toClientIDs: [client2ID]) { clientID, error in Issue.record(error) }
         await wait(expect: { await client2Receiver.messages == [msgB] }, timeout: isStable ? 1.0 : 10.0)
         try await Task.sleep(seconds: isStable ? 0.5 : 5.0) // allow time for any errant messages
         #expect(await serverReceiver.messages == [])
@@ -423,7 +424,7 @@ struct OSCTCPServer_Tests {
         // test server -> client 1 & 2
 
         let msgC = OSCMessage("/c")
-        try server.send(msgC, toClientIDs: [client1ID, client2ID])
+        server.send(msgC, toClientIDs: [client1ID, client2ID]) { clientID, error in Issue.record(error) }
         await wait(expect: { await client1Receiver.messages == [msgC] }, timeout: isStable ? 1.0 : 10.0)
         await wait(expect: { await client2Receiver.messages == [msgC] }, timeout: isStable ? 1.0 : 10.0)
         try await Task.sleep(seconds: isStable ? 0.5 : 5.0) // allow time for any errant messages
@@ -436,7 +437,7 @@ struct OSCTCPServer_Tests {
         // test server -> "all connected clients"
 
         let msgD = OSCMessage("/d")
-        try server.send(msgD)
+        server.send(msgD) { clientID, error in Issue.record(error) }
         await wait(expect: { await client1Receiver.messages == [msgD] }, timeout: isStable ? 1.0 : 10.0)
         await wait(expect: { await client2Receiver.messages == [msgD] }, timeout: isStable ? 1.0 : 10.0)
         try await Task.sleep(seconds: isStable ? 0.5 : 5.0) // allow time for any errant messages
