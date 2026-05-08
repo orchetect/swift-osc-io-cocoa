@@ -1,0 +1,104 @@
+//
+//  CocoaOSCTCPClient.swift
+//  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
+//  © 2026 Steffan Andrews • Licensed under MIT License
+//
+
+#if canImport(Darwin) && !os(watchOS)
+
+import Foundation
+import SwiftOSCCore
+
+public final class CocoaOSCTCPClient: OSCTCPClientProtocol {
+    /// Internal operations core.
+    let core: Core
+
+    public init(
+        remoteHost: String,
+        remotePort: UInt16,
+        interface: String?,
+        timeTagMode: OSCTimeTagMode,
+        framingMode: OSCTCPFramingMode,
+        queue: DispatchQueue?,
+        receiveHandler: OSCHandlerBlock?
+    ) {
+        core = Core(
+            remoteHost: remoteHost,
+            remotePort: remotePort,
+            interface: interface,
+            timeTagMode: timeTagMode,
+            framingMode: framingMode,
+            queue: queue,
+            receiveHandler: receiveHandler
+        )
+    }
+}
+
+extension CocoaOSCTCPClient: Sendable { }
+
+// MARK: - Lifecycle
+
+extension CocoaOSCTCPClient {
+    public func connect(timeout: TimeInterval) throws {
+        try core.connect(timeout: timeout)
+    }
+
+    public func close() {
+        core.close()
+    }
+}
+
+// MARK: - Communication
+
+extension CocoaOSCTCPClient {
+    public func send(_ packet: OSCPacket) throws {
+        try core.send(packet)
+    }
+
+    public func send(_ bundle: OSCBundle) throws {
+        try core.send(.bundle(bundle))
+    }
+
+    public func send(_ message: OSCMessage) throws {
+        try core.send(.message(message))
+    }
+}
+
+// MARK: - Properties
+
+extension CocoaOSCTCPClient {
+    public var timeTagMode: OSCTimeTagMode {
+        get { core.timeTagMode }
+        set { core.timeTagMode = newValue }
+    }
+    
+    public var remoteHost: String {
+        core.remoteHost
+    }
+    
+    public var remotePort: UInt16 {
+        core.remotePort
+    }
+    
+    public var interface: String? {
+        core.interface
+    }
+    
+    public var isConnected: Bool {
+        core.isConnected
+    }
+    
+    public var framingMode: OSCTCPFramingMode {
+        core.framingMode
+    }
+    
+    public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+        core.setReceiveHandler(handler)
+    }
+
+    public func setNotificationHandler(_ handler: NotificationHandlerBlock?) {
+        core.setNotificationHandler(handler)
+    }
+}
+
+#endif

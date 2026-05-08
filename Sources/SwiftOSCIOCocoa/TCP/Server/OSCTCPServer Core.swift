@@ -93,7 +93,7 @@ extension OSCTCPServer.Core {
             throw OSCTCPServerError.clientNotFound(clientID: clientID)
         }
         
-        try connection.send(oscPacket)
+        try connection._send(oscPacket)
     }
     
     func _send(_ oscBundle: OSCBundle, toClientID clientID: OSCTCPClientSessionID) throws {

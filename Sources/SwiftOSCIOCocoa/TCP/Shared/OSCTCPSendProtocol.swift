@@ -21,19 +21,7 @@ extension _OSCTCPSendProtocol {
     func _send(_ packet: OSCPacket) throws {
         try _send(packet.rawData())
     }
-
-    func _send(_ bundle: OSCBundle) throws {
-        try _send(bundle.rawData())
-    }
-
-    func _send(_ message: OSCMessage) throws {
-        try _send(message.rawData())
-    }
-
-    /// Send an OSC packet.
-    ///
-    /// - Parameters:
-    ///   - oscData: Raw bytes of an OSC bundle or message.
+    
     private func _send(_ oscData: Data) {
         // guard isConnected else {
         //     throw GCDAsyncUdpSocketError(

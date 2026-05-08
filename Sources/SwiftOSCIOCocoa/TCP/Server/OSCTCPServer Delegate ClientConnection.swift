@@ -14,7 +14,7 @@ extension OSCTCPServer.Delegate {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
         weak var delegate: OSCTCPServer.Delegate?
-        let tcpDelegate: OSCTCPClient.Delegate
+        let tcpDelegate: CocoaOSCTCPClient.Core.Delegate
         
         let tcpSocket: GCDAsyncSocket
         let clientID: OSCTCPClientSessionID
@@ -36,7 +36,7 @@ extension OSCTCPServer.Delegate {
             remotePort = tcpSocket.connectedPort
             self.framingMode = framingMode
             
-            tcpDelegate = OSCTCPClient.Delegate()
+            tcpDelegate = CocoaOSCTCPClient.Core.Delegate()
             tcpDelegate.oscServer = self
         }
 
@@ -60,17 +60,7 @@ extension OSCTCPServer.Delegate.ClientConnection {
 // MARK: - Communication
 
 extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPSendProtocol {
-    func send(_ oscPacket: OSCPacket) throws {
-        try _send(oscPacket)
-    }
-
-    func send(_ oscBundle: OSCBundle) throws {
-        try _send(oscBundle)
-    }
-
-    func send(_ oscMessage: OSCMessage) throws {
-        try _send(oscMessage)
-    }
+    // provides implementation for sending OSC data
 }
 
 extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPHandlerProtocol {
