@@ -129,7 +129,7 @@ public final class OSCUDPClient {
     }
 }
 
-extension OSCUDPClient: @unchecked Sendable { }
+extension OSCUDPClient: Sendable { }
 
 // MARK: - Lifecycle
 

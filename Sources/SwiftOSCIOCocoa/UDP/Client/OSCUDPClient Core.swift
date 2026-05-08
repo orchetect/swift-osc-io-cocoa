@@ -10,6 +10,7 @@
 import Foundation
 
 extension OSCUDPClient {
+    /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCUDPClient
         weak var parent: Parent?
@@ -57,6 +58,8 @@ extension OSCUDPClient {
         }
     }
 }
+
+extension OSCUDPClient.Core: @unchecked Sendable { } // TODO: unchecked
 
 // MARK: - Lifecycle
 
