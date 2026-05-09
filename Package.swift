@@ -6,7 +6,7 @@ let package = Package(
     name: "swift-osc-io-cocoa",
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13)],
     products: [
-        .library(name: "SwiftOSCIOCocoa", targets: ["SwiftOSCIOCocoa"])
+        .library(name: "SwiftOSCIO", targets: ["SwiftOSCIO"])
     ],
     dependencies: [
         .package(url: "https://github.com/orchetect/swift-osc-core", branch: "standardized-io"), // from: "1.0.0"),
@@ -16,7 +16,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SwiftOSCIOCocoa",
+            name: "SwiftOSCIO",
             dependencies: [
                 .product(name: "SwiftOSCCore", package: "swift-osc-core"),
                 .product(name: "SwiftOSCIOCore", package: "swift-osc-core"),
@@ -32,7 +32,7 @@ let package = Package(
         .testTarget(
             name: "SwiftOSCIOCocoaTests",
             dependencies: [
-                "SwiftOSCIOCocoa",
+                "SwiftOSCIO",
                 .product(name: "Numerics", package: "swift-numerics"),
                 .product(name: "TestingExtensions", package: "swift-testing-extensions")
             ]
