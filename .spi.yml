@@ -1,7 +1,7 @@
 version: 1
 builder:
   configs:
-    - documentation_targets: [SwiftOSCIOCocoa]
+    - documentation_targets: [SwiftOSCIO]
       scheme: swift-osc-io-cocoa
     - platform: watchOS
       scheme: NOT_SUPPORTED
