@@ -54,10 +54,10 @@ jobs:
         cd core/IOTests
         swift package add-dependency "../.." --type path
         swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
-    - name: Build
-      run: |
-        cd core/IOTests
-        xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    # - name: Build
+    #   run: |
+    #     cd core/IOTests
+    #     xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
     - name: Unit Tests
       run: |
         cd core/IOTests
@@ -87,10 +87,10 @@ jobs:
 #        cd core/IOTests
 #        swift package add-dependency "../.." --type path
 #        swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
-#    - name: Build
-#      run: |
-#        cd core/IOTests
-#        xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+#    # - name: Build
+#    #   run: |
+#    #     cd core/IOTests
+#    #     xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
 #    - name: Unit Tests
 #      run: |
 #        cd core/IOTests
@@ -132,11 +132,11 @@ jobs:
 #        cd core/IOTests
 #        swift package add-dependency "../.." --type path
 #        swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
-#    - name: Build
-#      run: xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=$PLATFORMSHORT" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
-#      env:
-#        PLATFORMSHORT: ${{ steps.sim-setup.outputs.platform-short }}
-#        WORKSPACEPATH: ${{ steps.sim-setup.outputs.workspace-path }}
+#    # - name: Build
+#    #   run: xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=$PLATFORMSHORT" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+#    #   env:
+#    #     PLATFORMSHORT: ${{ steps.sim-setup.outputs.platform-short }}
+#    #     WORKSPACEPATH: ${{ steps.sim-setup.outputs.workspace-path }}
 #    - name: Unit Tests
 #      run: xcodebuild test -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "platform=$PLATFORM,id=$ID" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
 #      env:
