@@ -44,7 +44,7 @@ jobs:
       uses: actions/checkout@main
       with:
         repository: orchetect/swift-osc-core
-        ref: {{ env.$IO_REF }} # branch or commit hash
+        ref: ${{ env.IO_REF }} # branch or commit hash
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
         path: core # save to local subfolder
     - name: Set up I/O Tests
@@ -77,7 +77,7 @@ jobs:
 #      uses: actions/checkout@main
 #      with:
 #        repository: orchetect/swift-osc-core
-#        ref: {{ env.$IO_REF }} # branch or commit hash
+#        ref: ${{ env.IO_REF }} # branch or commit hash
 #        sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
 #        path: core # save to local subfolder
 #    - name: Set up I/O Tests
@@ -122,7 +122,7 @@ jobs:
 #      uses: actions/checkout@main
 #      with:
 #        repository: orchetect/swift-osc-core
-#        ref: {{ env.$IO_REF }} # branch or commit hash
+#        ref: ${{ env.IO_REF }} # branch or commit hash
 #        sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
 #        path: core # save to local subfolder
 #    - name: Set up I/O Tests
