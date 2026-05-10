@@ -40,29 +40,28 @@ jobs:
         xcode-version: latest-stable
     - name: Clone Repo
       uses: actions/checkout@main
+      with:
+        path: download_io # save to local subfolder
     - name: Clone I/O Tests
       uses: actions/checkout@main
       with:
         repository: orchetect/swift-osc-core
         ref: ${{ env.IO_REF }} # branch or commit hash
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
-        path: core # save to local subfolder
+        path: download_tests # save to local subfolder
+    - name: Set up Repo Structure
+      run: mv download_tests/IOTests/* .
     - name: Set up I/O Tests
       run: |
         PACKAGE_NAME="${PWD##*/}"
         if [ -z $PACKAGE_NAME ]; then echo "⛔️ Error: Could not determine package name."; exit 1; fi
-        cd core/IOTests
-        swift package add-dependency "../.." --type path
+        swift package add-dependency "download_io" --type path
         swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
     # Don't run the build step otherwise it will exit with an error, since the I/O tests package only contains a test target
     # - name: Build
-    #   run: |
-    #     cd core/IOTests
-    #     xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    #   run: xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
     - name: Unit Tests
-      run: |
-        cd core/IOTests
-        xcodebuild test -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+      run: xcodebuild test -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
   
   macCatalyst:
     name: I/O Tests (macCatalyst)
@@ -74,29 +73,28 @@ jobs:
         xcode-version: latest-stable
     - name: Clone Repo
       uses: actions/checkout@main
+      with:
+        path: download_io # save to local subfolder
     - name: Clone I/O Tests
       uses: actions/checkout@main
       with:
         repository: orchetect/swift-osc-core
         ref: ${{ env.IO_REF }} # branch or commit hash
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
-        path: core # save to local subfolder
+        path: download_tests # save to local subfolder
+    - name: Set up Repo Structure
+      run: mv download_tests/IOTests/* .
     - name: Set up I/O Tests
       run: |
         PACKAGE_NAME="${PWD##*/}"
         if [ -z $PACKAGE_NAME ]; then echo "⛔️ Error: Could not determine package name."; exit 1; fi
-        cd core/IOTests
-        swift package add-dependency "../.." --type path
+        swift package add-dependency "download_io" --type path
         swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
     # Don't run the build step otherwise it will exit with an error, since the I/O tests package only contains a test target
     # - name: Build
-    #   run: |
-    #     cd core/IOTests
-    #     xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+    #   run: xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
     - name: Unit Tests
-      run: |
-        cd core/IOTests
-        xcodebuild test -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
+      run: xcodebuild test -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
 
   device-simulators:
     name: I/O Tests
@@ -120,19 +118,22 @@ jobs:
         target: ${{ matrix.target }}
     - name: Clone Repo
       uses: actions/checkout@main
+      with:
+        path: download_io # save to local subfolder
     - name: Clone I/O Tests
       uses: actions/checkout@main
       with:
         repository: orchetect/swift-osc-core
         ref: ${{ env.IO_REF }} # branch or commit hash
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
-        path: core # save to local subfolder
+        path: download_tests # save to local subfolder
+    - name: Set up Repo Structure
+      run: mv download_tests/IOTests/* .
     - name: Set up I/O Tests
       run: |
         PACKAGE_NAME="${PWD##*/}"
         if [ -z $PACKAGE_NAME ]; then echo "⛔️ Error: Could not determine package name."; exit 1; fi
-        cd core/IOTests
-        swift package add-dependency "../.." --type path
+        swift package add-dependency "download_io" --type path
         swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
     # Don't run the build step otherwise it will exit with an error, since the I/O tests package only contains a test target
     # - name: Build
