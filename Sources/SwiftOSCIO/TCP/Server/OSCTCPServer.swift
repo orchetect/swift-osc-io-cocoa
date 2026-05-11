@@ -4,10 +4,15 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-#if canImport(Darwin) && !os(watchOS)
-
+#if canImport(Darwin)
 import Foundation
 import SwiftOSCCore
+import SwiftOSCIOCore
+
+#if os(watchOS)
+// CocoaAsyncSocket does not support watchOS and will not successfully build, so use no-op stand-in
+public typealias OSCTCPServer = NoOpOSCTCPServer
+#else
 
 public final class OSCTCPServer: OSCTCPServerProtocol {
     /// Internal operations core.
@@ -96,5 +101,7 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
 }
 
 extension OSCTCPServer: Sendable { }
+
+#endif
 
 #endif
