@@ -50,7 +50,7 @@ jobs:
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
         path: download_tests # save to local subfolder
     - name: Set up Repo Structure
-      run: mv download_tests/IOTests/* .
+      run: cp -aRfv download_tests/IOTests/. . ; rm -rf download_tests/IOTests
     - name: Set up I/O Tests
       run: |
         PACKAGE_NAME="${PWD##*/}"
@@ -83,7 +83,7 @@ jobs:
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
         path: download_tests # save to local subfolder
     - name: Set up Repo Structure
-      run: mv download_tests/IOTests/* .
+      run: cp -aRfv download_tests/IOTests/. . ; rm -rf download_tests/IOTests
     - name: Set up I/O Tests
       run: |
         PACKAGE_NAME="${PWD##*/}"
@@ -120,7 +120,7 @@ jobs:
         sparse-checkout: IOTests # only downloads the IOTests folder from the repo root
         path: download_tests # save to local subfolder
     - name: Set up Repo Structure
-      run: mv download_tests/IOTests/* .
+      run: cp -aRfv download_tests/IOTests/. . ; rm -rf download_tests/IOTests
     - name: Set up I/O Tests
       run: |
         PACKAGE_NAME="${PWD##*/}"
