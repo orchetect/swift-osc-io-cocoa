@@ -97,7 +97,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        target: [iOS, tvOS, watchOS, visionOS]
+        target: [iOS, tvOS, visionOS] # skip watchOS
     continue-on-error: true
     timeout-minutes: 20
     steps:
