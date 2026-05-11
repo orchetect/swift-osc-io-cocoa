@@ -53,10 +53,8 @@ jobs:
       run: cp -aRfv download_tests/IOTests/. . ; rm -rf download_tests/IOTests
     - name: Set up I/O Tests
       run: |
-        PACKAGE_NAME="${PWD##*/}"
-        if [ -z $PACKAGE_NAME ]; then echo "⛔️ Error: Could not determine package name."; exit 1; fi
         swift package add-dependency "download_io" --type path
-        swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
+        swift package add-target-dependency SwiftOSCIO IOTests --package download_io
     # Don't run the build step otherwise it will exit with an error, since the I/O tests package only contains a test target
     # - name: Build
     #   run: xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
@@ -86,10 +84,8 @@ jobs:
       run: cp -aRfv download_tests/IOTests/. . ; rm -rf download_tests/IOTests
     - name: Set up I/O Tests
       run: |
-        PACKAGE_NAME="${PWD##*/}"
-        if [ -z $PACKAGE_NAME ]; then echo "⛔️ Error: Could not determine package name."; exit 1; fi
         swift package add-dependency "download_io" --type path
-        swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
+        swift package add-target-dependency SwiftOSCIO IOTests --package download_io
     # Don't run the build step otherwise it will exit with an error, since the I/O tests package only contains a test target
     # - name: Build
     #   run: xcodebuild build -skipMacroValidation -workspace "$IO_WORKSPACEPATH" -scheme "$IO_SCHEME" -destination "generic/platform=macOS,variant=Mac Catalyst" | xcbeautify --renderer github-actions && exit ${PIPESTATUS[0]}
@@ -123,10 +119,8 @@ jobs:
       run: cp -aRfv download_tests/IOTests/. . ; rm -rf download_tests/IOTests
     - name: Set up I/O Tests
       run: |
-        PACKAGE_NAME="${PWD##*/}"
-        if [ -z $PACKAGE_NAME ]; then echo "⛔️ Error: Could not determine package name."; exit 1; fi
         swift package add-dependency "download_io" --type path
-        swift package add-target-dependency SwiftOSCIO IOTests --package "$PACKAGE_NAME"
+        swift package add-target-dependency SwiftOSCIO IOTests --package download_io
     - name: Prepare Device Simulator
       id: sim-setup
       uses: orchetect/setup-xcode-simulator@v1
