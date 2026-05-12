@@ -6,19 +6,23 @@ let package = Package(
     name: "swift-osc-io-cocoa",
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13)],
     products: [
-        .library(name: "SwiftOSCIOCocoa", targets: ["SwiftOSCIOCocoa"])
+        .library(name: "SwiftOSCIO", targets: ["SwiftOSCIO"])
     ],
     dependencies: [
-        .package(url: "https://github.com/orchetect/swift-osc-core", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
-        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0"),
-        .package(url: "https://github.com/orchetect/swift-testing-extensions", from: "0.3.0")
+        .package(url: "https://github.com/orchetect/swift-osc-core", branch: "standardized-io"), // from: "1.0.0"),
+        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0")
+        
+        // testing-only dependencies:
+        // .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
+        // .package(url: "https://github.com/orchetect/swift-testing-extensions", from: "0.3.0")
     ],
     targets: [
         .target(
-            name: "SwiftOSCIOCocoa",
+            name: "SwiftOSCIO",
             dependencies: [
                 .product(name: "SwiftOSCCore", package: "swift-osc-core"),
+                .product(name: "SwiftOSCIOCore", package: "swift-osc-core"),
+                .product(name: "SwiftOSCIOInternals", package: "swift-osc-core"),
                 .product(
                     name: "CocoaAsyncSocket",
                     package: "CocoaAsyncSocket",
@@ -28,11 +32,11 @@ let package = Package(
             swiftSettings: [.define("DEBUG", .when(configuration: .debug))]
         ),
         .testTarget(
-            name: "SwiftOSCIOCocoaTests",
+            name: "SwiftOSCIOTests",
             dependencies: [
-                "SwiftOSCIOCocoa",
-                .product(name: "Numerics", package: "swift-numerics"),
-                .product(name: "TestingExtensions", package: "swift-testing-extensions")
+                "SwiftOSCIO"
+                // .product(name: "Numerics", package: "swift-numerics"),
+                // .product(name: "TestingExtensions", package: "swift-testing-extensions")
             ]
         )
     ]
@@ -47,7 +51,6 @@ let package = Package(
         func getEnvironmentVar(_ name: String) -> String? {
             ProcessInfo.processInfo.environment[name]
         }
-
     #elseif canImport(CoreFoundation)
         import CoreFoundation
 
