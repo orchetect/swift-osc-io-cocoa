@@ -80,7 +80,7 @@ extension OSCUDPClient.Core {
             // catch invalid interface error because we have a specific SwiftOSC error case for it.
             // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
             // so we must resort to error string introspection.
-            throw OSCUDPClientError.invalidInterface
+            throw OSCIOError.invalidInterface
         } catch {
             throw error
         }

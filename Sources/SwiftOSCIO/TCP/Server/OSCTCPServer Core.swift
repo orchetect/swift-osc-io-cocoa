@@ -74,7 +74,7 @@ extension OSCTCPServer.Core {
             // catch invalid interface error because we have a specific SwiftOSC error case for it.
             // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
             // so we must resort to error string introspection.
-            throw OSCTCPClientError.invalidInterface
+            throw OSCIOError.invalidInterface
         } catch {
             throw error
         }
@@ -113,7 +113,7 @@ extension OSCTCPServer.Core {
     
     func send(_ packet: OSCPacket, toClientID clientID: OSCTCPClientSessionID) throws {
         guard let connection = tcpDelegate.clients[clientID] else {
-            throw OSCTCPServerError.clientNotFound(clientID: clientID)
+            throw OSCIOError.clientNotFound(clientID: clientID)
         }
         
         try connection._send(packet)
