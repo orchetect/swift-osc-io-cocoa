@@ -12,14 +12,14 @@ Getting started with using SwiftOSC in your application.
 
 ## Value Types
 
-- See [OSC Value Types](https://swiftpackageindex.com/orchetect/swift-osc-core/main/documentation/swiftosccore/osc-value-types) in the SwiftOSCCore package documentation.
+- See [OSC Value Types](https://swiftpackageindex.com/orchetect/swift-osc-core/documentation/swiftosccore/osc-value-types) in the SwiftOSCCore package documentation.
 
 ## Sending and Receiving
 
 - <doc:Sending-OSC>
 - <doc:Receiving-OSC>
-  - [OSC Address Pattern Parsing](https://swiftpackageindex.com/orchetect/swift-midi-core/main/documentation/swiftmidicore/osc-address-pattern-parsing)
-  - [OSC Value Parsing](https://swiftpackageindex.com/orchetect/swift-midi-core/main/documentation/swiftmidicore/osc-value-parsing)
+  - [OSC Address Pattern Parsing](https://swiftpackageindex.com/orchetect/swift-midi-core/documentation/swiftmidicore/osc-address-pattern-parsing)
+  - [OSC Value Parsing](https://swiftpackageindex.com/orchetect/swift-midi-core/documentation/swiftmidicore/osc-value-parsing)
 
 ## Example Code
 
