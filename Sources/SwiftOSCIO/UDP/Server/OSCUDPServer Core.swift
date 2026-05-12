@@ -66,10 +66,21 @@ extension OSCUDPServer.Core {
         stop()
         
         try udpSocket.enableReusePort(isPortReuseEnabled)
-        try udpSocket.bind(
-            toPort: _localPort ?? 0, // 0 causes system to assign random open port
-            interface: interface
-        )
+        
+        do {
+            try udpSocket.bind(
+                toPort: _localPort ?? 0, // 0 causes system to assign random open port
+                interface: interface
+            )
+        } catch let error as GCDAsyncUdpSocketError where error.code == .badParamError {
+            // catch invalid interface error because we have a specific SwiftOSC error case for it.
+            // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
+            // so we must resort to error string introspection.
+            throw OSCUDPClientError.invalidInterface
+        } catch {
+            throw error
+        }
+        
         try udpSocket.beginReceiving()
 
         isStarted = true

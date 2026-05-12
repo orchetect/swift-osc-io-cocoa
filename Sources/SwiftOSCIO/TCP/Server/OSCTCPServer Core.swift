@@ -65,10 +65,19 @@ extension OSCTCPServer.Core {
     func start() throws {
         guard !isStarted else { return }
         
-        try tcpSocket.accept(
-            onInterface: interface,
-            port: _localPort ?? 0 // 0 causes system to assign random open port
-        )
+        do {
+            try tcpSocket.accept(
+                onInterface: interface,
+                port: _localPort ?? 0 // 0 causes system to assign random open port
+            )
+        } catch let error as GCDAsyncSocketError where error.code == .badParamError {
+            // catch invalid interface error because we have a specific SwiftOSC error case for it.
+            // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
+            // so we must resort to error string introspection.
+            throw OSCTCPClientError.invalidInterface
+        } catch {
+            throw error
+        }
         
         isStarted = true
     }

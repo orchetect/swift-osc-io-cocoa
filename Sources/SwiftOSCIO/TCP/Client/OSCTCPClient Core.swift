@@ -63,12 +63,21 @@ extension OSCTCPClient.Core: @unchecked Sendable { } // TODO: unchecked
 
 extension OSCTCPClient.Core {
     func connect(timeout: TimeInterval = 5.0) throws {
-        try tcpSocket.connect(
-            toHost: remoteHost,
-            onPort: remotePort,
-            viaInterface: interface,
-            withTimeout: max(1.0, timeout) // negative values mean indefinite (no timeout) which is a bit dangerous
-        )
+        do {
+            try tcpSocket.connect(
+                toHost: remoteHost,
+                onPort: remotePort,
+                viaInterface: interface,
+                withTimeout: max(1.0, timeout) // negative values mean indefinite (no timeout) which is a bit dangerous
+            )
+        } catch let error as GCDAsyncSocketError where error.code == .badParamError {
+            // catch invalid interface error because we have a specific SwiftOSC error case for it.
+            // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
+            // so we must resort to error string introspection.
+            throw OSCTCPClientError.invalidInterface
+        } catch {
+            throw error
+        }
     }
     
     func close() {
