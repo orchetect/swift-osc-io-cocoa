@@ -7,16 +7,16 @@
 #if canImport(Darwin) && !os(watchOS)
 
 @preconcurrency internal import CocoaAsyncSocket
+internal import SwiftOSCIOInternals
 import Foundation
 import SwiftOSCCore
-internal import SwiftOSCIOInternals
 
 extension OSCTCPServer.Delegate {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
         weak var delegate: OSCTCPServer.Delegate?
         let tcpDelegate: OSCTCPClient.Core.Delegate
-        
+
         let tcpSocket: GCDAsyncSocket
         let clientID: OSCTCPClientSessionID
         let remoteHost: String // cached, since GCDAsyncSocket resets it upon disconnection
@@ -30,13 +30,13 @@ extension OSCTCPServer.Delegate {
             delegate: OSCTCPServer.Delegate?
         ) {
             self.delegate = delegate
-            
+
             self.tcpSocket = tcpSocket
             self.clientID = clientID
             remoteHost = tcpSocket.connectedHost ?? ""
             remotePort = tcpSocket.connectedPort
             self.framingMode = framingMode
-            
+
             tcpDelegate = OSCTCPClient.Core.Delegate()
             tcpDelegate.oscServer = self
         }
@@ -76,7 +76,7 @@ extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPHandlerProtocol {
     var receiveHandler: OSCHandlerBlock? {
         delegate?.oscServer?.receiveHandler
     }
-    
+
     func setReceiveHandler(_ handler: OSCHandlerBlock?) {
         delegate?.oscServer?.setReceiveHandler(handler)
     }

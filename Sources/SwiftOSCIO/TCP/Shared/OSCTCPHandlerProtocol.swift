@@ -7,9 +7,9 @@
 #if canImport(Darwin) && !os(watchOS)
 
 @preconcurrency internal import CocoaAsyncSocket
+internal import SwiftOSCIOInternals
 import Foundation
 import SwiftOSCCore
-internal import SwiftOSCIOInternals
 
 /// Internal protocol that TCP-based OSC classes adopt in order to handle incoming OSC data.
 protocol _OSCTCPHandlerProtocol: OSCTCPHandlerProtocol {
@@ -20,7 +20,7 @@ extension _OSCTCPHandlerProtocol {
     func _handle(receivedData data: Data, on sock: GCDAsyncSocket) {
         let remoteHost = sock.connectedHost ?? ""
         let remotePort = sock.connectedPort
-        
+
         handle(receivedData: data, remoteHost: remoteHost, remotePort: remotePort)
     }
 }

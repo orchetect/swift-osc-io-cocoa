@@ -62,29 +62,29 @@ public final class OSCUDPSocket: OSCUDPSocketProtocol {
         get { core.timeTagMode }
         set { core.timeTagMode = newValue }
     }
-    
+
     public var remoteHost: String? {
         get { core.remoteHost }
         set { core.remoteHost = newValue }
     }
-    
+
     public var localPort: UInt16 {
         core.localPort
     }
-    
+
     public var remotePort: UInt16 {
         get { core.remotePort }
         set { core.remotePort = newValue }
     }
-    
+
     public var interface: String? {
         core.interface
     }
-    
+
     public var isIPv4BroadcastEnabled: Bool {
         core.isIPv4BroadcastEnabled
     }
-    
+
     public var isStarted: Bool {
         core.isStarted
     }

@@ -7,15 +7,15 @@
 #if canImport(Darwin) && !os(watchOS)
 
 @preconcurrency internal import CocoaAsyncSocket
+internal import SwiftOSCIOInternals
 import Foundation
 import SwiftOSCCore
-internal import SwiftOSCIOInternals
 
 extension OSCTCPClient {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCTCPClient
-        
+
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
@@ -27,7 +27,7 @@ extension OSCTCPClient {
         let remotePort: UInt16
         let interface: String?
         let framingMode: OSCTCPFramingMode
-        
+
         init(
             remoteHost: String,
             remotePort: UInt16,
@@ -45,12 +45,12 @@ extension OSCTCPClient {
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue")
             self.queue = queue
             self.receiveHandler = receiveHandler
-            
+
             tcpDelegate = Delegate()
             tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
             tcpDelegate.oscServer = self
         }
-        
+
         deinit {
             close()
         }
@@ -79,7 +79,7 @@ extension OSCTCPClient.Core {
             throw error
         }
     }
-    
+
     func close() {
         tcpSocket.disconnectAfterWriting()
     }
@@ -93,7 +93,7 @@ extension OSCTCPClient.Core: _OSCTCPHandlerProtocol {
 
 extension OSCTCPClient.Core: _OSCTCPSendProtocol {
     // provides implementation for sending OSC data
-    
+
     func send(_ packet: OSCPacket) throws {
         try _send(packet)
     }
@@ -104,7 +104,7 @@ extension OSCTCPClient.Core: OSCTCPGeneratesClientNotificationsProtocol {
         let notif: Parent.Notification = .connected
         notificationHandler?(notif)
     }
-    
+
     func generateDisconnectedNotification(error: (any Error)?) {
         let notif: Parent.Notification = .disconnected(error: error)
         notificationHandler?(notif)
@@ -117,13 +117,13 @@ extension OSCTCPClient.Core {
     var isConnected: Bool {
         tcpSocket.isConnected
     }
-    
+
     func setReceiveHandler(_ handler: OSCHandlerBlock?) {
         queue.async {
             self.receiveHandler = handler
         }
     }
-    
+
     func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
         queue.async {
             self.notificationHandler = handler

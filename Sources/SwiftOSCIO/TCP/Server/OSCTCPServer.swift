@@ -51,7 +51,7 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
     public func send(_ packet: OSCPacket, toClientID clientID: OSCTCPClientSessionID) throws {
         try core.send(packet, toClientID: clientID)
     }
-    
+
     public func send(
         _ packet: OSCPacket,
         toClientIDs clientIDs: [OSCTCPClientSessionID]?,
@@ -66,23 +66,23 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
         get { core.timeTagMode }
         set { core.timeTagMode = newValue }
     }
-    
+
     public var localPort: UInt16 {
         core.localPort
     }
-    
+
     public var interface: String? {
         core.interface
     }
-    
+
     public var isStarted: Bool {
         core.isStarted
     }
-    
+
     public var framingMode: OSCTCPFramingMode {
         core.framingMode
     }
-    
+
     public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
         core.setReceiveHandler(handler)
     }

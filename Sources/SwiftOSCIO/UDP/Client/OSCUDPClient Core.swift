@@ -13,20 +13,20 @@ extension OSCUDPClient {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCUDPClient
-        
+
         private let udpSocket = GCDAsyncUdpSocket()
         private let udpDelegate = Delegate()
-        
-        public var localPort: UInt16 {
+
+        var localPort: UInt16 {
             udpSocket.localPort()
         }
-        
+
         private var _localPort: UInt16?
-        
+
         private(set) var interface: String?
-        
+
         var isPortReuseEnabled: Bool
-        
+
         var isIPv4BroadcastEnabled: Bool {
             get { _isIPv4BroadcastEnabled }
             set {
@@ -34,10 +34,11 @@ extension OSCUDPClient {
                 try? udpSocket.enableBroadcast(newValue)
             }
         }
+
         private var _isIPv4BroadcastEnabled: Bool
-        
+
         private(set) var isStarted: Bool = false
-        
+
         init(
             localPort: UInt16?,
             interface: String?,
@@ -45,13 +46,13 @@ extension OSCUDPClient {
             isIPv4BroadcastEnabled: Bool
         ) {
             udpSocket.setDelegate(udpDelegate, delegateQueue: .global())
-            
+
             _localPort = (localPort == nil || localPort == 0) ? nil : localPort
             self.interface = interface
             self.isPortReuseEnabled = isPortReuseEnabled
             _isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
         }
-        
+
         deinit {
             stop()
         }
@@ -65,12 +66,12 @@ extension OSCUDPClient.Core: @unchecked Sendable { } // TODO: unchecked
 extension OSCUDPClient.Core {
     func start() throws {
         guard !isStarted else { return }
-        
+
         stop()
-        
+
         try udpSocket.enableReusePort(isPortReuseEnabled)
         try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
-        
+
         do {
             try udpSocket.bind(
                 toPort: _localPort ?? 0, // 0 causes system to assign random open port
@@ -84,13 +85,13 @@ extension OSCUDPClient.Core {
         } catch {
             throw error
         }
-        
+
         isStarted = true
     }
-    
+
     func stop() {
         udpSocket.close()
-        
+
         isStarted = false
     }
 }
@@ -100,7 +101,7 @@ extension OSCUDPClient.Core {
 extension OSCUDPClient.Core {
     func send(_ packet: OSCPacket, to host: String, port: UInt16) throws {
         let data = try packet.rawData()
-        
+
         udpSocket.send(
             data,
             toHost: host,

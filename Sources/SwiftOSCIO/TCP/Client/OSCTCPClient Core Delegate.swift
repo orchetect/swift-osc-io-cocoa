@@ -7,14 +7,14 @@
 #if canImport(Darwin) && !os(watchOS)
 
 @preconcurrency internal import CocoaAsyncSocket
-import Foundation
 internal import SwiftOSCIOInternals
+import Foundation
 
 extension OSCTCPClient.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
         weak var oscServer: (any _OSCTCPHandlerProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
-        
+
         // already implemented by NSObject
         // init() { }
     }

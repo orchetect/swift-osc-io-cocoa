@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/orchetect/swift-osc-core", branch: "main"), // from: "1.0.0"),
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.0.0")
-        
+
         // testing-only dependencies:
         // .package(url: "https://github.com/apple/swift-numerics", from: "1.1.1"),
         // .package(url: "https://github.com/orchetect/swift-testing-extensions", from: "0.3.0")
@@ -51,6 +51,7 @@ let package = Package(
         func getEnvironmentVar(_ name: String) -> String? {
             ProcessInfo.processInfo.environment[name]
         }
+
     #elseif canImport(CoreFoundation)
         import CoreFoundation
 

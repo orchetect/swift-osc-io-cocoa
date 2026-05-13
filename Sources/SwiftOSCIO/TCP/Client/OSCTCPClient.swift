@@ -4,7 +4,6 @@
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
 
-
 #if canImport(Darwin)
 import Foundation
 import SwiftOSCCore
@@ -61,27 +60,27 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
         get { core.timeTagMode }
         set { core.timeTagMode = newValue }
     }
-    
+
     public var remoteHost: String {
         core.remoteHost
     }
-    
+
     public var remotePort: UInt16 {
         core.remotePort
     }
-    
+
     public var interface: String? {
         core.interface
     }
-    
+
     public var isConnected: Bool {
         core.isConnected
     }
-    
+
     public var framingMode: OSCTCPFramingMode {
         core.framingMode
     }
-    
+
     public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
         core.setReceiveHandler(handler)
     }

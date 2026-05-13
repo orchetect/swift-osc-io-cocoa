@@ -52,24 +52,24 @@ public final class OSCUDPServer: OSCUDPServerProtocol {
         get { core.timeTagMode }
         set { core.timeTagMode = newValue }
     }
-    
+
     public var localPort: UInt16 {
         core.localPort
     }
-    
+
     public var interface: String? {
         core.interface
     }
-    
+
     public var isPortReuseEnabled: Bool {
         get { core.isPortReuseEnabled }
         set { core.isPortReuseEnabled = newValue }
     }
-    
+
     public var isStarted: Bool {
         core.isStarted
     }
-    
+
     public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
         core.setReceiveHandler(handler)
     }

@@ -21,7 +21,7 @@ extension _OSCTCPSendProtocol {
     func _send(_ packet: OSCPacket) throws {
         try _send(packet.rawData())
     }
-    
+
     private func _send(_ oscData: Data) {
         // guard isConnected else {
         //     throw OSCTCPClientError.noRemoteHost

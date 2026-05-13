@@ -53,21 +53,21 @@ public final class OSCUDPClient: OSCUDPClientProtocol {
     public var localPort: UInt16 {
         core.localPort
     }
-    
+
     public var interface: String? {
         core.interface
     }
-    
+
     public var isPortReuseEnabled: Bool {
         get { core.isPortReuseEnabled }
         set { core.isPortReuseEnabled = newValue }
     }
-    
+
     public var isIPv4BroadcastEnabled: Bool {
         get { core.isIPv4BroadcastEnabled }
         set { core.isIPv4BroadcastEnabled = newValue }
     }
-    
+
     public var isStarted: Bool {
         core.isStarted
     }

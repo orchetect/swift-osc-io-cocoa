@@ -14,7 +14,7 @@ extension OSCUDPServer {
     /// Internal UDP receiver class so as to not expose `GCDAsyncUdpSocketDelegate` methods as public.
     final class Delegate: NSObject {
         weak var oscServer: (any _OSCHandlerProtocol)?
-        
+
         init(oscServer: (any _OSCHandlerProtocol)? = nil) {
             self.oscServer = oscServer
         }

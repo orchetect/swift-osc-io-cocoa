@@ -7,29 +7,30 @@
 #if canImport(Darwin) && !os(watchOS)
 
 @preconcurrency internal import CocoaAsyncSocket
+internal import SwiftOSCIOInternals
 import Foundation
 import SwiftOSCCore
-internal import SwiftOSCIOInternals
 
 extension OSCUDPServer {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCUDPServer
-        
+
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Delegate()
         let queue: DispatchQueue
         var receiveHandler: OSCHandlerBlock?
-        
+
         var timeTagMode: OSCTimeTagMode
         var localPort: UInt16 {
             udpSocket.localPort()
         }
+
         private var _localPort: UInt16?
         private(set) var interface: String?
         var isPortReuseEnabled: Bool = false
         private(set) var isStarted: Bool = false
-        
+
         init(
             port: UInt16?,
             interface: String?,
@@ -44,11 +45,11 @@ extension OSCUDPServer {
             self.timeTagMode = timeTagMode
             self.queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue")
             self.receiveHandler = receiveHandler
-            
+
             udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: self.queue, socketQueue: nil)
             udpDelegate.oscServer = self
         }
-        
+
         deinit {
             stop()
         }
@@ -62,11 +63,11 @@ extension OSCUDPServer.Core: @unchecked Sendable { }
 extension OSCUDPServer.Core {
     func start() throws {
         guard !isStarted else { return }
-        
+
         stop()
-        
+
         try udpSocket.enableReusePort(isPortReuseEnabled)
-        
+
         do {
             try udpSocket.bind(
                 toPort: _localPort ?? 0, // 0 causes system to assign random open port
@@ -80,7 +81,7 @@ extension OSCUDPServer.Core {
         } catch {
             throw error
         }
-        
+
         try udpSocket.beginReceiving()
 
         isStarted = true
@@ -88,7 +89,7 @@ extension OSCUDPServer.Core {
 
     func stop() {
         udpSocket.close()
-        
+
         isStarted = false
     }
 }

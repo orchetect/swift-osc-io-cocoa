@@ -15,33 +15,35 @@ extension OSCUDPSocket {
     /// Internal operations class so as to not expose I/O implementation details as public.
     final class Core {
         typealias Parent = OSCUDPSocket
-        
+
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Delegate()
         let queue: DispatchQueue
         var receiveHandler: OSCHandlerBlock?
-        
+
         var timeTagMode: OSCTimeTagMode
-        
+
         var remoteHost: String?
-        
+
         var localPort: UInt16 {
             udpSocket.localPort()
         }
+
         private var _localPort: UInt16?
-        
+
         var remotePort: UInt16 {
             get { _remotePort ?? localPort }
             set { _remotePort = (newValue == 0) ? nil : newValue }
         }
+
         private var _remotePort: UInt16?
-        
+
         private(set) var interface: String?
-        
+
         let isIPv4BroadcastEnabled: Bool
-        
+
         private(set) var isStarted: Bool = false
-        
+
         init(
             localPort: UInt16?,
             remoteHost: String?,
@@ -61,11 +63,11 @@ extension OSCUDPSocket {
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPSocket.queue")
             self.queue = queue
             self.receiveHandler = receiveHandler
-            
+
             udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: queue, socketQueue: nil)
             udpDelegate.oscServer = self
         }
-        
+
         deinit {
             stop()
         }
@@ -79,9 +81,9 @@ extension OSCUDPSocket.Core: @unchecked Sendable { }
 extension OSCUDPSocket.Core {
     func start() throws {
         guard !isStarted else { return }
-        
+
         try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
-        
+
         do {
             try udpSocket.bind(
                 toPort: _localPort ?? 0, // 0 causes system to assign random open port
@@ -95,15 +97,15 @@ extension OSCUDPSocket.Core {
         } catch {
             throw error
         }
-        
+
         try udpSocket.beginReceiving()
 
         isStarted = true
     }
-    
+
     func stop() {
         udpSocket.close()
-        
+
         isStarted = false
     }
 }
@@ -115,13 +117,13 @@ extension OSCUDPSocket.Core {
         guard isStarted else {
             throw OSCIOError.notStarted
         }
-        
+
         guard let toHost = host ?? remoteHost else {
             throw OSCIOError.noRemoteHost
         }
-        
+
         let data = try packet.rawData()
-        
+
         udpSocket.send(
             data,
             toHost: toHost,
