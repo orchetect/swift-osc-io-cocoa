@@ -13,7 +13,7 @@ import Foundation
 extension OSCTCPServer {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
-        weak var oscServer: (any _OSCTCPHandlerProtocol & OSCTCPGeneratesServerNotificationsProtocol)?
+        weak var oscServer: (any _OSCTCPPacketHandlerProtocol & OSCTCPGeneratesServerNotificationsProtocol)?
         let framingMode: OSCTCPFramingMode
 
         /// Currently connected client sessions.

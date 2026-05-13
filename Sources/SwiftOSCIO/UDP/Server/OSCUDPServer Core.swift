@@ -19,9 +19,8 @@ extension OSCUDPServer {
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Delegate()
         let queue: DispatchQueue
-        var receiveHandler: OSCHandlerBlock?
+        var receiveHandler: OSCPacketHandler?
 
-        var timeTagMode: OSCTimeTagMode
         var localPort: UInt16 {
             udpSocket.localPort()
         }
@@ -35,14 +34,12 @@ extension OSCUDPServer {
             port: UInt16?,
             interface: String?,
             isPortReuseEnabled: Bool,
-            timeTagMode: OSCTimeTagMode,
             queue: DispatchQueue?,
-            receiveHandler: OSCHandlerBlock?
+            receiveHandler: OSCPacketHandler?
         ) {
             _localPort = (port == nil || port == 0) ? nil : port
             self.interface = interface
             self.isPortReuseEnabled = isPortReuseEnabled
-            self.timeTagMode = timeTagMode
             self.queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue")
             self.receiveHandler = receiveHandler
 
@@ -96,14 +93,14 @@ extension OSCUDPServer.Core {
 
 // MARK: - Communication
 
-extension OSCUDPServer.Core: _OSCHandlerProtocol {
+extension OSCUDPServer.Core: _OSCPacketDispatcherProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 
 // MARK: - Properties
 
 extension OSCUDPServer.Core {
-    func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+    func setReceiveHandler(_ handler: OSCPacketHandler?) {
         queue.async {
             self.receiveHandler = handler
         }

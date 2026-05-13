@@ -64,21 +64,13 @@ extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPSendProtocol {
     // provides implementation for sending OSC data
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPHandlerProtocol {
+extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPPacketHandlerProtocol {
     var queue: DispatchQueue {
         tcpSocket.delegateQueue ?? .global()
     }
 
-    var timeTagMode: OSCTimeTagMode {
-        delegate?.oscServer?.timeTagMode ?? .ignore
-    }
-
-    var receiveHandler: OSCHandlerBlock? {
+    var receiveHandler: OSCPacketHandler? {
         delegate?.oscServer?.receiveHandler
-    }
-
-    func setReceiveHandler(_ handler: OSCHandlerBlock?) {
-        delegate?.oscServer?.setReceiveHandler(handler)
     }
 }
 

@@ -6,4 +6,4 @@
 
 internal import SwiftOSCIOInternals
 
-protocol _OSCHandlerProtocol: OSCHandlerProtocol { }
+protocol _OSCPacketDispatcherProtocol: OSCPacketDispatcherProtocol { }
