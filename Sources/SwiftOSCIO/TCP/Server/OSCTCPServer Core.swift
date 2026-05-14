@@ -20,6 +20,7 @@ extension OSCTCPServer {
         let tcpDelegate: Parent.Delegate
         let queue: DispatchQueue
         var receiveHandler: OSCPacketHandler?
+        var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
         var notificationHandler: NotificationHandlerBlock?
         var localPort: UInt16 {
             tcpSocket.localPort
@@ -118,7 +119,7 @@ extension OSCTCPServer.Core {
     }
 }
 
-extension OSCTCPServer.Core: _OSCTCPPacketHandlerProtocol {
+extension OSCTCPServer.Core: _OSCTCPPacketDispatcherProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 
@@ -142,18 +143,6 @@ extension OSCTCPServer.Core: OSCTCPGeneratesServerNotificationsProtocol {
 // MARK: - Properties
 
 extension OSCTCPServer.Core {
-    func setReceiveHandler(_ handler: OSCPacketHandler?) {
-        queue.sync {
-            self.receiveHandler = handler
-        }
-    }
-
-    func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
-        queue.sync {
-            self.notificationHandler = handler
-        }
-    }
-
     var clients: [OSCTCPClientSessionID: (host: String, port: UInt16)] {
         tcpDelegate
             .clients
@@ -167,6 +156,24 @@ extension OSCTCPServer.Core {
 
     func disconnectClient(clientID: OSCTCPClientSessionID) {
         tcpDelegate.closeClient(clientID: clientID)
+    }
+
+    func setReceiveHandler(_ handler: OSCPacketHandler?) {
+        queue.sync {
+            self.receiveHandler = handler
+        }
+    }
+
+    func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
+        queue.sync {
+            self.receiveErrorHandler = handler
+        }
+    }
+
+    func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
+        queue.sync {
+            self.notificationHandler = handler
+        }
     }
 }
 

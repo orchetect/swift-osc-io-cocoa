@@ -20,6 +20,7 @@ extension OSCUDPSocket {
         let udpDelegate = Parent.Delegate()
         let queue: DispatchQueue
         var receiveHandler: OSCPacketHandler?
+        var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
 
         var remoteHost: String?
 
@@ -140,6 +141,12 @@ extension OSCUDPSocket.Core {
     func setReceiveHandler(_ handler: OSCPacketHandler?) {
         queue.sync {
             self.receiveHandler = handler
+        }
+    }
+
+    func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
+        queue.sync {
+            self.receiveErrorHandler = handler
         }
     }
 }

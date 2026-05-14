@@ -64,13 +64,17 @@ extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPSendProtocol {
     // provides implementation for sending OSC data
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPPacketHandlerProtocol {
+extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPPacketDispatcherProtocol {
     var queue: DispatchQueue {
         tcpSocket.delegateQueue ?? .global()
     }
 
     var receiveHandler: OSCPacketHandler? {
         delegate?.oscServer?.receiveHandler
+    }
+    
+    var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
+        delegate?.oscServer?.receiveErrorHandler
     }
 }
 

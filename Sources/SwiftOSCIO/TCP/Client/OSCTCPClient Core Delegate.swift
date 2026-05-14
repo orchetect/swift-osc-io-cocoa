@@ -13,7 +13,7 @@ import Foundation
 extension OSCTCPClient.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
-        weak var oscServer: (any _OSCTCPPacketHandlerProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
+        weak var oscServer: (any _OSCTCPPacketDispatcherProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
 
         // already implemented by NSObject
         // init() { }
@@ -41,7 +41,7 @@ extension OSCTCPClient.Core.Delegate: GCDAsyncSocketDelegate {
             sock.readData(withTimeout: -1, tag: tag)
         }
 
-        oscServer?._handle(receivedData: data, on: sock)
+        oscServer?._dispatch(receivedTCPFramedData: data, on: sock)
     }
 
     func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: (any Error)?) {
