@@ -21,6 +21,7 @@ extension OSCTCPClient {
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
         var receiveHandler: OSCPacketHandler?
+        var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
         var notificationHandler: Parent.NotificationHandlerBlock?
         let remoteHost: String
         let remotePort: UInt16
@@ -118,6 +119,12 @@ extension OSCTCPClient.Core {
     func setReceiveHandler(_ handler: OSCPacketHandler?) {
         queue.sync {
             self.receiveHandler = handler
+        }
+    }
+
+    func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
+        queue.sync {
+            self.receiveErrorHandler = handler
         }
     }
 

@@ -78,6 +78,10 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
         core.setReceiveHandler(handler)
     }
 
+    public func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
+        core.setReceiveErrorHandler(handler)
+    }
+
     public func setNotificationHandler(_ handler: NotificationHandlerBlock?) {
         core.setNotificationHandler(handler)
     }
