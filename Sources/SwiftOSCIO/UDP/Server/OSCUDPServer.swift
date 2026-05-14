@@ -22,15 +22,13 @@ public final class OSCUDPServer: OSCUDPServerProtocol {
         port: UInt16?,
         interface: String?,
         isPortReuseEnabled: Bool,
-        timeTagMode: OSCTimeTagMode,
         queue: DispatchQueue?,
-        receiveHandler: OSCHandlerBlock?
+        receiveHandler: OSCPacketHandler?
     ) {
         core = Core(
             port: port,
             interface: interface,
             isPortReuseEnabled: isPortReuseEnabled,
-            timeTagMode: timeTagMode,
             queue: queue,
             receiveHandler: receiveHandler
         )
@@ -47,11 +45,6 @@ public final class OSCUDPServer: OSCUDPServerProtocol {
     }
 
     // MARK: - Properties
-
-    public var timeTagMode: OSCTimeTagMode {
-        get { core.timeTagMode }
-        set { core.timeTagMode = newValue }
-    }
 
     public var localPort: UInt16 {
         core.localPort
@@ -70,7 +63,7 @@ public final class OSCUDPServer: OSCUDPServerProtocol {
         core.isStarted
     }
 
-    public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+    public func setReceiveHandler(_ handler: OSCPacketHandler?) {
         core.setReceiveHandler(handler)
     }
 }

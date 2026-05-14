@@ -13,7 +13,7 @@ import Foundation
 extension OSCTCPClient.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
-        weak var oscServer: (any _OSCTCPHandlerProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
+        weak var oscServer: (any _OSCTCPPacketHandlerProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
 
         // already implemented by NSObject
         // init() { }

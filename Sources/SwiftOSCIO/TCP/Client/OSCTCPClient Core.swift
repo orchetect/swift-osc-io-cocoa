@@ -20,9 +20,8 @@ extension OSCTCPClient {
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
-        var receiveHandler: OSCHandlerBlock?
+        var receiveHandler: OSCPacketHandler?
         var notificationHandler: Parent.NotificationHandlerBlock?
-        var timeTagMode: OSCTimeTagMode
         let remoteHost: String
         let remotePort: UInt16
         let interface: String?
@@ -32,17 +31,15 @@ extension OSCTCPClient {
             remoteHost: String,
             remotePort: UInt16,
             interface: String?,
-            timeTagMode: OSCTimeTagMode,
             framingMode: OSCTCPFramingMode,
             queue: DispatchQueue?,
-            receiveHandler: OSCHandlerBlock?
+            receiveHandler: OSCPacketHandler?
         ) {
             self.remoteHost = remoteHost
             self.remotePort = remotePort
             self.interface = interface
-            self.timeTagMode = timeTagMode
             self.framingMode = framingMode
-            let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue")
+            let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue", target: .global())
             self.queue = queue
             self.receiveHandler = receiveHandler
 
@@ -87,7 +84,7 @@ extension OSCTCPClient.Core {
 
 // MARK: - Communication
 
-extension OSCTCPClient.Core: _OSCTCPHandlerProtocol {
+extension OSCTCPClient.Core: _OSCTCPPacketHandlerProtocol {
     // provides implementation for dispatching incoming OSC data
 }
 
@@ -118,14 +115,14 @@ extension OSCTCPClient.Core {
         tcpSocket.isConnected
     }
 
-    func setReceiveHandler(_ handler: OSCHandlerBlock?) {
-        queue.async {
+    func setReceiveHandler(_ handler: OSCPacketHandler?) {
+        queue.sync {
             self.receiveHandler = handler
         }
     }
 
     func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
-        queue.async {
+        queue.sync {
             self.notificationHandler = handler
         }
     }

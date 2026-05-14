@@ -22,16 +22,14 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
         remoteHost: String,
         remotePort: UInt16,
         interface: String?,
-        timeTagMode: OSCTimeTagMode,
         framingMode: OSCTCPFramingMode,
         queue: DispatchQueue?,
-        receiveHandler: OSCHandlerBlock?
+        receiveHandler: OSCPacketHandler?
     ) {
         core = Core(
             remoteHost: remoteHost,
             remotePort: remotePort,
             interface: interface,
-            timeTagMode: timeTagMode,
             framingMode: framingMode,
             queue: queue,
             receiveHandler: receiveHandler
@@ -56,11 +54,6 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
 
     // MARK: - Properties
 
-    public var timeTagMode: OSCTimeTagMode {
-        get { core.timeTagMode }
-        set { core.timeTagMode = newValue }
-    }
-
     public var remoteHost: String {
         core.remoteHost
     }
@@ -81,7 +74,7 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
         core.framingMode
     }
 
-    public func setReceiveHandler(_ handler: OSCHandlerBlock?) {
+    public func setReceiveHandler(_ handler: OSCPacketHandler?) {
         core.setReceiveHandler(handler)
     }
 
