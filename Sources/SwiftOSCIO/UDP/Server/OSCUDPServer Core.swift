@@ -40,7 +40,7 @@ extension OSCUDPServer {
             _localPort = (port == nil || port == 0) ? nil : port
             self.interface = interface
             self.isPortReuseEnabled = isPortReuseEnabled
-            self.queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue")
+            self.queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue", target: .global())
             self.receiveHandler = receiveHandler
 
             udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: self.queue, socketQueue: nil)
