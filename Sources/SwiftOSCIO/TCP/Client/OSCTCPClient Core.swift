@@ -68,7 +68,10 @@ extension OSCTCPClient.Core {
                 viaInterface: interface,
                 withTimeout: max(1.0, timeout) // negative values mean indefinite (no timeout) which is a bit dangerous
             )
-        } catch let error as GCDAsyncSocketError where error.code == .badParamError {
+        } catch let error as GCDAsyncSocketError
+            where error.code == .badParamError
+            && error.localizedDescription.localizedCaseInsensitiveContains("Unknown interface")
+        {
             // catch invalid interface error because we have a specific SwiftOSC error case for it.
             // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
             // so we must resort to error string introspection.
