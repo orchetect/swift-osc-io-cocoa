@@ -36,6 +36,8 @@ extension OSCTCPClient {
             }
         }
         
+        var isIPv6AddressTranslationToIPv4Enabled: Bool = false
+        
         init(
             remoteHost: String,
             remotePort: UInt16,
