@@ -20,7 +20,6 @@ extension OSCUDPClient {
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-
         private var _localPort: UInt16?
 
         private(set) var interface: String?
@@ -34,8 +33,15 @@ extension OSCUDPClient {
                 try? udpSocket.enableBroadcast(newValue)
             }
         }
-
         private var _isIPv4BroadcastEnabled: Bool
+
+        var isIPv6Enabled: Bool {
+            didSet {
+                if isStarted {
+                    print("Setting isIPv6Enabled will not have any effect until the UDP client is stopped and started again.")
+                }
+            }
+        }
 
         private(set) var isStarted: Bool = false
 
@@ -43,7 +49,8 @@ extension OSCUDPClient {
             localPort: UInt16?,
             interface: String?,
             isPortReuseEnabled: Bool,
-            isIPv4BroadcastEnabled: Bool
+            isIPv4BroadcastEnabled: Bool,
+            isIPv6Enabled: Bool
         ) {
             udpSocket.setDelegate(udpDelegate, delegateQueue: .global())
 
@@ -51,6 +58,7 @@ extension OSCUDPClient {
             self.interface = interface
             self.isPortReuseEnabled = isPortReuseEnabled
             _isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
+            self.isIPv6Enabled = isIPv6Enabled
         }
 
         deinit {

@@ -22,24 +22,37 @@ extension OSCTCPServer {
         var receiveHandler: OSCPacketHandler?
         var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
         var notificationHandler: NotificationHandlerBlock?
+
         var localPort: UInt16 {
             tcpSocket.localPort
         }
-
         var _localPort: UInt16?
+
         let interface: String?
+        
+        var isIPv6Enabled: Bool {
+            didSet {
+                if isStarted {
+                    print("Setting isIPv6Enabled will not have any effect until the TCP server is stopped and restarted again.")
+                }
+            }
+        }
+        
         private(set) var isStarted: Bool = false
+
         let framingMode: OSCTCPFramingMode
 
         init(
             port: UInt16?,
-            interface: String? = nil,
+            interface: String?,
+            isIPv6Enabled: Bool,
             framingMode: OSCTCPFramingMode,
             queue: DispatchQueue?,
             receiveHandler: OSCPacketHandler?
         ) {
             _localPort = (port == nil || port == 0) ? nil : port
             self.interface = interface
+            self.isIPv6Enabled = isIPv6Enabled
             self.framingMode = framingMode
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.queue", target: .global())
             self.queue = queue

@@ -22,6 +22,7 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
         remoteHost: String,
         remotePort: UInt16,
         interface: String?,
+        isIPv6Enabled: Bool,
         framingMode: OSCTCPFramingMode,
         queue: DispatchQueue?,
         receiveHandler: OSCPacketHandler?
@@ -30,6 +31,7 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
             remoteHost: remoteHost,
             remotePort: remotePort,
             interface: interface,
+            isIPv6Enabled: isIPv6Enabled,
             framingMode: framingMode,
             queue: queue,
             receiveHandler: receiveHandler
@@ -64,6 +66,11 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
 
     public var interface: String? {
         core.interface
+    }
+
+    public var isIPv6Enabled: Bool {
+        get { core.isIPv6Enabled }
+        set { core.isIPv6Enabled = newValue }
     }
 
     public var isConnected: Bool {

@@ -25,22 +25,34 @@ extension OSCUDPServer {
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-
         private var _localPort: UInt16?
+
         private(set) var interface: String?
+
         var isPortReuseEnabled: Bool = false
+        
+        var isIPv6Enabled: Bool {
+            didSet {
+                if isStarted {
+                    print("Setting isIPv6Enabled will not have any effect until the UDP server is stopped and started again.")
+                }
+            }
+        }
+
         private(set) var isStarted: Bool = false
 
         init(
             port: UInt16?,
             interface: String?,
             isPortReuseEnabled: Bool,
+            isIPv6Enabled: Bool,
             queue: DispatchQueue?,
             receiveHandler: OSCPacketHandler?
         ) {
             _localPort = (port == nil || port == 0) ? nil : port
             self.interface = interface
             self.isPortReuseEnabled = isPortReuseEnabled
+            self.isIPv6Enabled = isIPv6Enabled
             self.queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue", target: .global())
             self.receiveHandler = receiveHandler
 

@@ -41,6 +41,14 @@ extension OSCUDPSocket {
 
         let isIPv4BroadcastEnabled: Bool
 
+        var isIPv6Enabled: Bool {
+            didSet {
+                if isStarted {
+                    print("Setting isIPv6Enabled will not have any effect until the UDP socket is stopped and started again.")
+                }
+            }
+        }
+
         private(set) var isStarted: Bool = false
 
         init(
@@ -49,6 +57,7 @@ extension OSCUDPSocket {
             remotePort: UInt16?,
             interface: String?,
             isIPv4BroadcastEnabled: Bool,
+            isIPv6Enabled: Bool,
             queue: DispatchQueue?,
             receiveHandler: OSCPacketHandler?
         ) {
@@ -57,6 +66,7 @@ extension OSCUDPSocket {
             _remotePort = (remotePort == nil || remotePort == 0) ? nil : remotePort
             self.interface = interface
             self.isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
+            self.isIPv6Enabled = isIPv6Enabled
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPSocket.queue", target: .global())
             self.queue = queue
             self.receiveHandler = receiveHandler
