@@ -73,12 +73,49 @@ extension OSCTCPClient.Core: @unchecked Sendable { } // TODO: unchecked
 
 extension OSCTCPClient.Core {
     func connect(timeout: TimeInterval = 5.0) throws {
+        // sanitize inputs
+        // negative values mean indefinite (no timeout) which is a bit dangerous
+        let timeout = max(1.0, timeout)
+        
+        let remoteHost: String
+        if isIPv6Enabled {
+            // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6
+            remoteHost = self.remoteHost
+        } else {
+            if isIPv6AddressTranslationToIPv4Enabled {
+                // translate an IPv6 host/IP to an IPv4 if possible.
+                let proposedRemoteHost = try IPUtils.ipAddressUsingReverseLookup(forHostnameOrIPAddress: self.remoteHost, family: .ipv4)
+                guard let proposedRemoteHost else {
+                    throw OSCIOError.noRemoteHost // TODO: could use a new invalidRemoteHost case
+                }
+                remoteHost = proposedRemoteHost
+            } else {
+                // use host as-is. if it's an IPv6 address (or CocoaAsyncSocket resolves it to one),
+                // then it will throw an error during `connect()` since we will be disabling IPv6 on the socket.
+                remoteHost = self.remoteHost
+            }
+        }
+        
+        // by default, if interface is passed as `nil`, CocoaAsyncSocket will bind to the "any" wildcard.
+        // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
+        let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
+
+        if isIPv6Enabled {
+            // by default, both IPv4 and IPv6 are enabled
+            tcpSocket.isIPv4PreferredOverIPv6 = true // still prefer v4 when possible
+            tcpSocket.isIPv6Enabled = true
+        } else {
+            // by default, both IPv4 and IPv6 are enabled
+            tcpSocket.isIPv4PreferredOverIPv6 = true
+            tcpSocket.isIPv6Enabled = false
+        }
+        
         do {
             try tcpSocket.connect(
                 toHost: remoteHost,
                 onPort: remotePort,
                 viaInterface: interface,
-                withTimeout: max(1.0, timeout) // negative values mean indefinite (no timeout) which is a bit dangerous
+                withTimeout: timeout
             )
         } catch let error as GCDAsyncSocketError
             where error.code == .badParamError

@@ -80,12 +80,16 @@ extension OSCUDPClient.Core {
         try udpSocket.enableReusePort(isPortReuseEnabled)
         try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
 
+        // by default, if interface is passed as `nil`, CocoaAsyncSocket will bind to the "any" wildcard.
+        // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
+        let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
+
         do {
             try udpSocket.bind(
                 toPort: _localPort ?? 0, // 0 causes system to assign random open port
                 interface: interface
             )
-        } catch let error as GCDAsyncSocketError
+        } catch let error as GCDAsyncUdpSocketError
             where error.code == .badParamError
             && error.localizedDescription.localizedCaseInsensitiveContains("Unknown interface")
         {
