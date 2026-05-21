@@ -11,6 +11,7 @@ import SwiftOSCIOCore
 
 #if os(watchOS)
 // CocoaAsyncSocket does not support watchOS and will not successfully build, so use no-op stand-in
+@available(*, deprecated, message: "OSC classes are unavailable on watchOS when using the CocoaAsyncSocket network I/O backend.")
 public typealias OSCTCPServer = NoOpOSCTCPServer
 #else
 
