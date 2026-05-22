@@ -20,6 +20,8 @@ extension OSCUDPClient {
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPClient.Core.syncQueue", target: .global())
 
+        let queue: DispatchQueue
+
         var localPort: UInt16 {
             udpSocket.localPort()
         }
@@ -87,6 +89,8 @@ extension OSCUDPClient {
             _isPortReuseEnabled = isPortReuseEnabled
             _isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
             _isIPv6Enabled = isIPv6Enabled
+            
+            queue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPClient.Core.queue")
         }
 
         deinit {
@@ -153,15 +157,21 @@ extension OSCUDPClient.Core {
 
 extension OSCUDPClient.Core {
     func send(_ packet: OSCPacket, to host: String, port: UInt16) throws {
-        let data = try packet.rawData()
+        try queue.sync {
+            if !isStarted {
+                try start()
+            }
 
-        udpSocket.send(
-            data,
-            toHost: host,
-            port: port,
-            withTimeout: 1.0,
-            tag: 0
-        )
+            let data = try packet.rawData()
+
+            udpSocket.send(
+                data,
+                toHost: host,
+                port: port,
+                withTimeout: 1.0,
+                tag: 0
+            )
+        }
     }
 }
 
