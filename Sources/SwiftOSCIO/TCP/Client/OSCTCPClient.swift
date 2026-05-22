@@ -60,7 +60,7 @@ public final class OSCTCPClient: OSCTCPClientProtocol {
     public var localPort: UInt16? {
         core.localPort
     }
-    
+
     public var remoteHost: String {
         core.remoteHost
     }

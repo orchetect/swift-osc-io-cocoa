@@ -22,37 +22,41 @@ extension OSCTCPServer {
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Parent.Core.Delegate
         let queue: DispatchQueue
-        
+
         var receiveHandler: OSCPacketHandler? {
             get { syncQueue.sync { _receiveHandler } }
             set { syncQueue.sync { _receiveHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
-        
+
         var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
             get { syncQueue.sync { _receiveErrorHandler } }
             set { syncQueue.sync { _receiveErrorHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
-        
+
         var notificationHandler: Parent.NotificationHandlerBlock? {
             get { syncQueue.sync { _notificationHandler } }
             set { syncQueue.sync { _notificationHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _notificationHandler: Parent.NotificationHandlerBlock?
 
         var localPort: UInt16 {
             tcpSocket.localPort
         }
-        
+
         private var preferredLocalPort: UInt16? {
             get { syncQueue.sync { _preferredLocalPort } }
             set { syncQueue.sync { _preferredLocalPort = newValue } }
         }
+
         nonisolated(unsafe) private var _preferredLocalPort: UInt16?
 
         let interface: String?
-        
+
         var isIPv6Enabled: Bool {
             get {
                 syncQueue.sync { _isIPv6Enabled }
@@ -64,12 +68,14 @@ extension OSCTCPServer {
                 }
             }
         }
+
         nonisolated(unsafe) private var _isIPv6Enabled: Bool
-        
+
         private(set) var isStarted: Bool {
             get { syncQueue.sync { _isStarted } }
             set { syncQueue.sync { _isStarted = newValue } }
         }
+
         nonisolated(unsafe) private var _isStarted: Bool = false
 
         let framingMode: OSCTCPFramingMode
@@ -122,7 +128,7 @@ extension OSCTCPServer.Core {
             tcpSocket.isIPv4PreferredOverIPv6 = true
             tcpSocket.isIPv6Enabled = false
         }
-        
+
         do {
             // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6
             try tcpSocket.accept(

@@ -18,21 +18,23 @@ extension OSCUDPSocket {
 
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPSocket.Core.syncQueue", target: .global())
-        
+
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Core.Delegate()
         let queue: DispatchQueue
-        
+
         var receiveHandler: OSCPacketHandler? {
             get { syncQueue.sync { _receiveHandler } }
             set { syncQueue.sync { _receiveHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
-        
+
         var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
             get { syncQueue.sync { _receiveErrorHandler } }
             set { syncQueue.sync { _receiveErrorHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
 
         var remoteHost: String? {
@@ -44,22 +46,25 @@ extension OSCUDPSocket {
                 }
             }
         }
+
         nonisolated(unsafe) private var _remoteHost: String?
 
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-        
+
         private var preferredLocalPort: UInt16? {
             get { syncQueue.sync { _preferredLocalPort } }
             set { syncQueue.sync { _preferredLocalPort = newValue } }
         }
+
         nonisolated(unsafe) private var _preferredLocalPort: UInt16?
 
         var remotePort: UInt16 {
             get { syncQueue.sync { _remotePort } ?? localPort }
             set { syncQueue.sync { _remotePort = (newValue == 0) ? nil : newValue } }
         }
+
         nonisolated(unsafe) private var _remotePort: UInt16?
 
         let interface: String?
@@ -77,12 +82,14 @@ extension OSCUDPSocket {
                 }
             }
         }
+
         nonisolated(unsafe) private var _isIPv6Enabled: Bool
-        
+
         private(set) var isStarted: Bool {
             get { syncQueue.sync { _isStarted } }
             set { syncQueue.sync { _isStarted = newValue } }
         }
+
         nonisolated(unsafe) private var _isStarted: Bool = false
 
         init(
@@ -128,7 +135,7 @@ extension OSCUDPSocket.Core {
         // by default, if interface is passed as `nil`, CocoaAsyncSocket will bind to the "any" wildcard.
         // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
         let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
-        
+
         do {
             try udpSocket.bind(
                 toPort: preferredLocalPort ?? 0, // 0 causes system to assign random open port

@@ -23,37 +23,40 @@ extension OSCTCPClient {
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
-        
+
         var localPort: UInt16? {
             isConnected ? tcpSocket.localPort : nil
         }
-        
+
         let remoteHost: String
-        
+
         let remotePort: UInt16
-        
+
         let interface: String?
-        
+
         let framingMode: OSCTCPFramingMode
-        
+
         var receiveHandler: OSCPacketHandler? {
             get { syncQueue.sync { _receiveHandler } }
             set { syncQueue.sync { _receiveHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
-        
+
         var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
             get { syncQueue.sync { _receiveErrorHandler } }
             set { syncQueue.sync { _receiveErrorHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
-        
+
         var notificationHandler: Parent.NotificationHandlerBlock? {
             get { syncQueue.sync { _notificationHandler } }
             set { syncQueue.sync { _notificationHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _notificationHandler: Parent.NotificationHandlerBlock?
-        
+
         var isIPv6Enabled: Bool {
             get {
                 syncQueue.sync { _isIPv6Enabled }
@@ -65,14 +68,16 @@ extension OSCTCPClient {
                 }
             }
         }
+
         nonisolated(unsafe) private var _isIPv6Enabled: Bool
-        
+
         var isIPv6AddressTranslationToIPv4Enabled: Bool {
             get { syncQueue.sync { _isIPv6AddressTranslationToIPv4Enabled } }
             set { syncQueue.sync { _isIPv6AddressTranslationToIPv4Enabled = newValue } }
         }
+
         nonisolated(unsafe) private var _isIPv6AddressTranslationToIPv4Enabled: Bool = false
-        
+
         init(
             remoteHost: String,
             remotePort: UInt16,
@@ -111,7 +116,7 @@ extension OSCTCPClient.Core {
         // sanitize inputs
         // negative values mean indefinite (no timeout) which is a bit dangerous
         let timeout = max(1.0, timeout)
-        
+
         let remoteHost: String
         if isIPv6Enabled {
             // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6
@@ -130,7 +135,7 @@ extension OSCTCPClient.Core {
                 remoteHost = self.remoteHost
             }
         }
-        
+
         // by default, if interface is passed as `nil`, CocoaAsyncSocket will bind to the "any" wildcard.
         // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
         let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
@@ -144,7 +149,7 @@ extension OSCTCPClient.Core {
             tcpSocket.isIPv4PreferredOverIPv6 = true
             tcpSocket.isIPv6Enabled = false
         }
-        
+
         do {
             try tcpSocket.connect(
                 toHost: remoteHost,

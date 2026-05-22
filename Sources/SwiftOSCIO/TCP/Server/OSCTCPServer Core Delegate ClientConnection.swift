@@ -16,7 +16,7 @@ extension OSCTCPServer.Core.Delegate {
     final class ClientConnection {
         nonisolated(unsafe)
         weak var delegate: OSCTCPServer.Core.Delegate?
-        
+
         let tcpDelegate: OSCTCPClient.Core.Delegate
 
         let tcpSocket: GCDAsyncSocket
@@ -74,7 +74,7 @@ extension OSCTCPServer.Core.Delegate.ClientConnection: _OSCTCPPacketDispatcherPr
     var receiveHandler: OSCPacketHandler? {
         delegate?.oscServer?.receiveHandler
     }
-    
+
     var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
         delegate?.oscServer?.receiveErrorHandler
     }

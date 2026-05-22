@@ -18,31 +18,34 @@ extension OSCUDPServer {
 
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.Core.syncQueue", target: .global())
-        
+
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Core.Delegate()
         let queue: DispatchQueue
-        
+
         var receiveHandler: OSCPacketHandler? {
             get { syncQueue.sync { _receiveHandler } }
             set { syncQueue.sync { _receiveHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
-        
+
         var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
             get { syncQueue.sync { _receiveErrorHandler } }
             set { syncQueue.sync { _receiveErrorHandler = newValue } }
         }
+
         nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
 
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-        
+
         private var preferredLocalPort: UInt16? {
             get { syncQueue.sync { _preferredLocalPort } }
             set { syncQueue.sync { _preferredLocalPort = newValue } }
         }
+
         nonisolated(unsafe) private var _preferredLocalPort: UInt16?
 
         let interface: String?
@@ -51,8 +54,9 @@ extension OSCUDPServer {
             get { syncQueue.sync { _isPortReuseEnabled } }
             set { syncQueue.sync { _isPortReuseEnabled = newValue } }
         }
+
         nonisolated(unsafe) private var _isPortReuseEnabled: Bool
-        
+
         var isIPv6Enabled: Bool {
             get {
                 syncQueue.sync { _isIPv6Enabled }
@@ -64,12 +68,14 @@ extension OSCUDPServer {
                 }
             }
         }
+
         nonisolated(unsafe) private var _isIPv6Enabled: Bool
-        
+
         private(set) var isStarted: Bool {
             get { syncQueue.sync { _isStarted } }
             set { syncQueue.sync { _isStarted = newValue } }
         }
+
         nonisolated(unsafe) private var _isStarted: Bool = false
 
         init(

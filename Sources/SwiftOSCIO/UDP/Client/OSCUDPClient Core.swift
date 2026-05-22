@@ -19,25 +19,27 @@ extension OSCUDPClient {
 
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPClient.Core.syncQueue", target: .global())
-        
+
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-        
+
         private var preferredLocalPort: UInt16? {
             get { syncQueue.sync { _preferredLocalPort } }
             set { syncQueue.sync { _preferredLocalPort = newValue } }
         }
+
         nonisolated(unsafe) private var _preferredLocalPort: UInt16?
-        
+
         let interface: String?
 
         var isPortReuseEnabled: Bool {
             get { syncQueue.sync { _isPortReuseEnabled } }
             set { syncQueue.sync { _isPortReuseEnabled = newValue } }
         }
+
         nonisolated(unsafe) private var _isPortReuseEnabled: Bool
-        
+
         var isIPv4BroadcastEnabled: Bool {
             get {
                 syncQueue.sync { _isIPv4BroadcastEnabled }
@@ -47,6 +49,7 @@ extension OSCUDPClient {
                 try? udpSocket.enableBroadcast(newValue)
             }
         }
+
         nonisolated(unsafe) private var _isIPv4BroadcastEnabled: Bool
 
         var isIPv6Enabled: Bool {
@@ -60,12 +63,14 @@ extension OSCUDPClient {
                 }
             }
         }
+
         nonisolated(unsafe) private var _isIPv6Enabled: Bool
 
         private(set) var isStarted: Bool {
             get { syncQueue.sync { _isStarted } }
             set { syncQueue.sync { _isStarted = newValue } }
         }
+
         nonisolated(unsafe) private var _isStarted: Bool = false
 
         init(

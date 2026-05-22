@@ -16,10 +16,10 @@ extension OSCTCPServer.Core {
     final class Delegate: NSObject {
         nonisolated(unsafe)
         weak var oscServer: (any _OSCTCPPacketDispatcherProtocol & OSCTCPGeneratesServerNotificationsProtocol)?
-        
+
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.Delegate.syncQueue", target: .global())
-        
+
         let framingMode: OSCTCPFramingMode
 
         /// Currently connected client sessions.
@@ -36,8 +36,9 @@ extension OSCTCPServer.Core {
                 syncQueue.sync { _clients = newValue }
             }
         }
+
         nonisolated(unsafe) private var _clients: [OSCTCPClientSessionID: ClientConnection] = [:]
-        
+
         init(framingMode: OSCTCPFramingMode) {
             self.framingMode = framingMode
         }
@@ -149,10 +150,10 @@ extension OSCTCPServer.Core.Delegate {
               let host = clients[clientID]?.remoteHost,
               let port = clients[clientID]?.remotePort
         else { return }
-        
+
         clients[clientID]?.close()
         clients[clientID] = nil
-        
+
         // send notification
         // (when we close a client connection, the `socketDidDisconnect` method does not fire
         // so we have to manually generate a notification here.
