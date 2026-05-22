@@ -181,23 +181,27 @@ extension OSCUDPSocket.Core {
 
 extension OSCUDPSocket.Core {
     func send(_ packet: OSCPacket, to host: String?, port: UInt16?) throws {
-        guard isStarted else {
-            throw OSCIOError.notStarted
+        try queue.sync {
+            guard isStarted else {
+                throw OSCIOError.notStarted
+            }
+            
+            guard let toHost = host ?? remoteHost else {
+                throw OSCIOError.noRemoteHost
+            }
+            
+            let toPort = port ?? remotePort
+            
+            let data = try packet.rawData()
+            
+            udpSocket.send(
+                data,
+                toHost: toHost,
+                port: toPort,
+                withTimeout: 1.0,
+                tag: 0
+            )
         }
-
-        guard let toHost = host ?? remoteHost else {
-            throw OSCIOError.noRemoteHost
-        }
-
-        let data = try packet.rawData()
-
-        udpSocket.send(
-            data,
-            toHost: toHost,
-            port: port ?? remotePort,
-            withTimeout: 1.0,
-            tag: 0
-        )
     }
 }
 
