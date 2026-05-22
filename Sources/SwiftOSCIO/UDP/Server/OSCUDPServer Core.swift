@@ -39,7 +39,7 @@ extension OSCUDPServer {
             udpSocket.localPort()
         }
         
-        var preferredLocalPort: UInt16? {
+        private var preferredLocalPort: UInt16? {
             get { syncQueue.sync { _preferredLocalPort } }
             set { syncQueue.sync { _preferredLocalPort = newValue } }
         }
