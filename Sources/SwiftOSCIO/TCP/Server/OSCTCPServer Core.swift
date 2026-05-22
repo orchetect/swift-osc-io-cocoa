@@ -20,7 +20,7 @@ extension OSCTCPServer {
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.Core.syncQueue", target: .global())
 
         let tcpSocket: GCDAsyncSocket
-        let tcpDelegate: Parent.Delegate
+        let tcpDelegate: Parent.Core.Delegate
         let queue: DispatchQueue
         
         var receiveHandler: OSCPacketHandler? {
@@ -90,7 +90,7 @@ extension OSCTCPServer {
             self.queue = queue
             _receiveHandler = receiveHandler
 
-            tcpDelegate = Parent.Delegate(framingMode: framingMode)
+            tcpDelegate = Parent.Core.Delegate(framingMode: framingMode)
             tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil) // do NOT use syncQueue
             tcpDelegate.oscServer = self
         }

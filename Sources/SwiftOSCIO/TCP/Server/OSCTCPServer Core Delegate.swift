@@ -1,5 +1,5 @@
 //
-//  OSCTCPServer Delegate.swift
+//  OSCTCPServer Core Delegate.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -11,7 +11,7 @@ internal import SwiftOSCIOInternals
 import Foundation
 import Synchronization
 
-extension OSCTCPServer {
+extension OSCTCPServer.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
         nonisolated(unsafe)
@@ -48,9 +48,9 @@ extension OSCTCPServer {
     }
 }
 
-extension OSCTCPServer.Delegate: Sendable { }
+extension OSCTCPServer.Core.Delegate: Sendable { }
 
-extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
+extension OSCTCPServer.Core.Delegate: GCDAsyncSocketDelegate {
     func newSocketQueueForConnection(fromAddress address: Data, on sock: GCDAsyncSocket) -> dispatch_queue_t? {
         oscServer?.queue
     }
@@ -135,7 +135,7 @@ extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
 
 // MARK: - Methods
 
-extension OSCTCPServer.Delegate {
+extension OSCTCPServer.Core.Delegate {
     /// Close connections for any connected clients and remove them from the list of connected clients.
     func closeClients() {
         for clientID in clients.keys {
@@ -167,7 +167,7 @@ extension OSCTCPServer.Delegate {
 
 // MARK: - Utilities
 
-extension OSCTCPServer.Delegate {
+extension OSCTCPServer.Core.Delegate {
     /// Generate a new client ID that is not currently in use by any connected client(s).
     private func newClientID() -> OSCTCPClientSessionID {
         var clientID: Int = 0

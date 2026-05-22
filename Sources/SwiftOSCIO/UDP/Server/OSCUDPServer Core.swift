@@ -20,7 +20,7 @@ extension OSCUDPServer {
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.Core.syncQueue", target: .global())
         
         let udpSocket: GCDAsyncUdpSocket
-        let udpDelegate = Parent.Delegate()
+        let udpDelegate = Parent.Core.Delegate()
         let queue: DispatchQueue
         
         var receiveHandler: OSCPacketHandler? {
