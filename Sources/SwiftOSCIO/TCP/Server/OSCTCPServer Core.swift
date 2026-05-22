@@ -212,6 +212,10 @@ extension OSCTCPServer.Core: OSCTCPGeneratesServerNotificationsProtocol {
 // MARK: - Properties
 
 extension OSCTCPServer.Core {
+    var localHost: String? {
+        isStarted ? tcpSocket.localHost : nil
+    }
+
     var clients: [OSCTCPClientSessionID: (host: String, port: UInt16)] {
         tcpDelegate
             .clients

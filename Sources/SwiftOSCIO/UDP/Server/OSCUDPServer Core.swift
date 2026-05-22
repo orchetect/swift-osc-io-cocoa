@@ -37,6 +37,10 @@ extension OSCUDPServer {
 
         nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
 
+        var localHost: String? {
+            isStarted ? udpSocket.localHost() : nil
+        }
+
         var localPort: UInt16 {
             udpSocket.localPort()
         }

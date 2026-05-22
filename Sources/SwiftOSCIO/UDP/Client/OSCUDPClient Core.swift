@@ -22,6 +22,10 @@ extension OSCUDPClient {
 
         let queue: DispatchQueue
 
+        var localHost: String? {
+            isStarted ? udpSocket.localHost() : nil
+        }
+
         var localPort: UInt16 {
             udpSocket.localPort()
         }

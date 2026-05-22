@@ -59,13 +59,17 @@ public final class OSCUDPSocket: OSCUDPSocketProtocol {
 
     // MARK: - Properties
 
-    public var remoteHost: String? {
-        get { core.remoteHost }
-        set { core.remoteHost = newValue }
+    public var localHost: String? {
+        core.localHost
     }
 
     public var localPort: UInt16 {
         core.localPort
+    }
+
+    public var remoteHost: String? {
+        get { core.remoteHost }
+        set { core.remoteHost = newValue }
     }
 
     public var remotePort: UInt16 {

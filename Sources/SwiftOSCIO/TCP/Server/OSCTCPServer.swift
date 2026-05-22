@@ -63,6 +63,10 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
 
     // MARK: - Properties
 
+    public var localHost: String? {
+        core.localHost
+    }
+
     public var localPort: UInt16 {
         core.localPort
     }

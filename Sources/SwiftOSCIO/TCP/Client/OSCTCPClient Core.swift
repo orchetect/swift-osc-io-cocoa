@@ -24,6 +24,10 @@ extension OSCTCPClient {
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
 
+        var localHost: String? {
+            isConnected ? tcpSocket.localHost : nil
+        }
+        
         var localPort: UInt16? {
             isConnected ? tcpSocket.localPort : nil
         }

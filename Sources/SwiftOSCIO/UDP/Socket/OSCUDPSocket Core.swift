@@ -37,6 +37,14 @@ extension OSCUDPSocket {
 
         nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
 
+        var localHost: String? {
+            isStarted ? udpSocket.localHost() : nil
+        }
+
+        var localPort: UInt16 {
+            udpSocket.localPort()
+        }
+
         var remoteHost: String? {
             get { syncQueue.sync { _remoteHost } }
             set {
@@ -48,10 +56,6 @@ extension OSCUDPSocket {
         }
 
         nonisolated(unsafe) private var _remoteHost: String?
-
-        var localPort: UInt16 {
-            udpSocket.localPort()
-        }
 
         private var preferredLocalPort: UInt16? {
             get { syncQueue.sync { _preferredLocalPort } }
