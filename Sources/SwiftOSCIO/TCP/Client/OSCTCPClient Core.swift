@@ -23,9 +23,17 @@ extension OSCTCPClient {
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
+        
+        var localPort: UInt16? {
+            isConnected ? tcpSocket.localPort : nil
+        }
+        
         let remoteHost: String
+        
         let remotePort: UInt16
+        
         let interface: String?
+        
         let framingMode: OSCTCPFramingMode
         
         var receiveHandler: OSCPacketHandler? {
