@@ -1,5 +1,5 @@
 //
-//  OSCUDPServer Delegate.swift
+//  OSCUDPServer Core Delegate.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -10,9 +10,10 @@
 import Foundation
 import SwiftOSCCore
 
-extension OSCUDPServer {
+extension OSCUDPServer.Core {
     /// Internal UDP receiver class so as to not expose `GCDAsyncUdpSocketDelegate` methods as public.
     final class Delegate: NSObject {
+        nonisolated(unsafe)
         weak var oscServer: (any _OSCPacketDispatcherProtocol)?
 
         init(oscServer: (any _OSCPacketDispatcherProtocol)? = nil) {
@@ -21,7 +22,9 @@ extension OSCUDPServer {
     }
 }
 
-extension OSCUDPServer.Delegate: GCDAsyncUdpSocketDelegate {
+extension OSCUDPServer.Core.Delegate: Sendable { }
+
+extension OSCUDPServer.Core.Delegate: GCDAsyncUdpSocketDelegate {
     /// CocoaAsyncSocket receive delegate method implementation.
     func udpSocket(
         _ sock: GCDAsyncUdpSocket,
@@ -53,7 +56,5 @@ extension OSCUDPServer.Delegate: GCDAsyncUdpSocketDelegate {
         oscServer.dispatch(receivedPacket: data, remoteHost: remoteHost, remotePort: remotePort)
     }
 }
-
-extension OSCUDPServer.Delegate: @unchecked Sendable { } // TODO: unchecked
 
 #endif

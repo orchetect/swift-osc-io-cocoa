@@ -16,37 +16,82 @@ extension OSCTCPServer {
     final class Core {
         typealias Parent = OSCTCPServer
 
+        /// Internal queue used for synchronizing access to mutable properties.
+        let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.Core.syncQueue", target: .global())
+
         let tcpSocket: GCDAsyncSocket
-        let tcpDelegate: Parent.Delegate
+        let tcpDelegate: Parent.Core.Delegate
         let queue: DispatchQueue
-        var receiveHandler: OSCPacketHandler?
-        var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
-        var notificationHandler: NotificationHandlerBlock?
+        
+        var receiveHandler: OSCPacketHandler? {
+            get { syncQueue.sync { _receiveHandler } }
+            set { syncQueue.sync { _receiveHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
+        
+        var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
+            get { syncQueue.sync { _receiveErrorHandler } }
+            set { syncQueue.sync { _receiveErrorHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
+        
+        var notificationHandler: Parent.NotificationHandlerBlock? {
+            get { syncQueue.sync { _notificationHandler } }
+            set { syncQueue.sync { _notificationHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _notificationHandler: Parent.NotificationHandlerBlock?
+
         var localPort: UInt16 {
             tcpSocket.localPort
         }
+        
+        private var preferredLocalPort: UInt16? {
+            get { syncQueue.sync { _preferredLocalPort } }
+            set { syncQueue.sync { _preferredLocalPort = newValue } }
+        }
+        nonisolated(unsafe) private var _preferredLocalPort: UInt16?
 
-        var _localPort: UInt16?
         let interface: String?
-        private(set) var isStarted: Bool = false
+        
+        var isIPv6Enabled: Bool {
+            get {
+                syncQueue.sync { _isIPv6Enabled }
+            }
+            set {
+                syncQueue.sync { _isIPv6Enabled = newValue }
+                if isStarted {
+                    print("Setting isIPv6Enabled will not have any effect until the TCP server is stopped and restarted again.")
+                }
+            }
+        }
+        nonisolated(unsafe) private var _isIPv6Enabled: Bool
+        
+        private(set) var isStarted: Bool {
+            get { syncQueue.sync { _isStarted } }
+            set { syncQueue.sync { _isStarted = newValue } }
+        }
+        nonisolated(unsafe) private var _isStarted: Bool = false
+
         let framingMode: OSCTCPFramingMode
 
         init(
             port: UInt16?,
-            interface: String? = nil,
+            interface: String?,
+            isIPv6Enabled: Bool,
             framingMode: OSCTCPFramingMode,
             queue: DispatchQueue?,
             receiveHandler: OSCPacketHandler?
         ) {
-            _localPort = (port == nil || port == 0) ? nil : port
+            _preferredLocalPort = (port == nil || port == 0) ? nil : port
             self.interface = interface
+            _isIPv6Enabled = isIPv6Enabled
             self.framingMode = framingMode
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.queue", target: .global())
             self.queue = queue
-            self.receiveHandler = receiveHandler
+            _receiveHandler = receiveHandler
 
-            tcpDelegate = Parent.Delegate(framingMode: framingMode)
-            tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
+            tcpDelegate = Parent.Core.Delegate(framingMode: framingMode)
+            tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil) // do NOT use syncQueue
             tcpDelegate.oscServer = self
         }
 
@@ -56,7 +101,7 @@ extension OSCTCPServer {
     }
 }
 
-extension OSCTCPServer.Core: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPServer.Core: Sendable { }
 
 // MARK: - Lifecycle
 
@@ -64,12 +109,30 @@ extension OSCTCPServer.Core {
     func start() throws {
         guard !isStarted else { return }
 
+        // by default, if interface is passed as `nil`, CocoaAsyncSocket will bind to the "any" wildcard.
+        // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
+        let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
+
+        if isIPv6Enabled {
+            // by default, both IPv4 and IPv6 are enabled
+            tcpSocket.isIPv4PreferredOverIPv6 = true // still prefer v4 when possible
+            tcpSocket.isIPv6Enabled = true
+        } else {
+            // by default, both IPv4 and IPv6 are enabled
+            tcpSocket.isIPv4PreferredOverIPv6 = true
+            tcpSocket.isIPv6Enabled = false
+        }
+        
         do {
+            // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6
             try tcpSocket.accept(
                 onInterface: interface,
-                port: _localPort ?? 0 // 0 causes system to assign random open port
+                port: preferredLocalPort ?? 0 // 0 causes system to assign random open port
             )
-        } catch let error as GCDAsyncSocketError where error.code == .badParamError {
+        } catch let error as GCDAsyncSocketError
+            where error.code == .badParamError
+            && error.localizedDescription.localizedCaseInsensitiveContains("Unknown interface")
+        {
             // catch invalid interface error because we have a specific SwiftOSC error case for it.
             // CocoaAsyncSocket does not provide granular enough error types to know if it's an interface error
             // so we must resort to error string introspection.
@@ -159,21 +222,15 @@ extension OSCTCPServer.Core {
     }
 
     func setReceiveHandler(_ handler: OSCPacketHandler?) {
-        queue.sync {
-            self.receiveHandler = handler
-        }
+        receiveHandler = handler
     }
 
     func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
-        queue.sync {
-            self.receiveErrorHandler = handler
-        }
+        receiveErrorHandler = handler
     }
 
     func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
-        queue.sync {
-            self.notificationHandler = handler
-        }
+        notificationHandler = handler
     }
 }
 

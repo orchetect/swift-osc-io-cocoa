@@ -1,5 +1,5 @@
 //
-//  OSCTCPServer Delegate ClientConnection.swift
+//  OSCTCPServer Core Delegate ClientConnection.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -11,10 +11,12 @@ internal import SwiftOSCIOInternals
 import Foundation
 import SwiftOSCCore
 
-extension OSCTCPServer.Delegate {
+extension OSCTCPServer.Core.Delegate {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
-        weak var delegate: OSCTCPServer.Delegate?
+        nonisolated(unsafe)
+        weak var delegate: OSCTCPServer.Core.Delegate?
+        
         let tcpDelegate: OSCTCPClient.Core.Delegate
 
         let tcpSocket: GCDAsyncSocket
@@ -27,7 +29,7 @@ extension OSCTCPServer.Delegate {
             tcpSocket: GCDAsyncSocket,
             clientID: OSCTCPClientSessionID,
             framingMode: OSCTCPFramingMode,
-            delegate: OSCTCPServer.Delegate?
+            delegate: OSCTCPServer.Core.Delegate?
         ) {
             self.delegate = delegate
 
@@ -47,11 +49,11 @@ extension OSCTCPServer.Delegate {
     }
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPServer.Core.Delegate.ClientConnection: Sendable { }
 
 // MARK: - Lifecycle
 
-extension OSCTCPServer.Delegate.ClientConnection {
+extension OSCTCPServer.Core.Delegate.ClientConnection {
     func close() {
         tcpSocket.disconnectAfterReadingAndWriting()
         tcpSocket.delegate = nil
@@ -60,11 +62,11 @@ extension OSCTCPServer.Delegate.ClientConnection {
 
 // MARK: - Communication
 
-extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPSendProtocol {
+extension OSCTCPServer.Core.Delegate.ClientConnection: _OSCTCPSendProtocol {
     // provides implementation for sending OSC data
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPPacketDispatcherProtocol {
+extension OSCTCPServer.Core.Delegate.ClientConnection: _OSCTCPPacketDispatcherProtocol {
     var queue: DispatchQueue {
         tcpSocket.delegateQueue ?? .global()
     }
@@ -78,7 +80,7 @@ extension OSCTCPServer.Delegate.ClientConnection: _OSCTCPPacketDispatcherProtoco
     }
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: OSCTCPGeneratesClientNotificationsProtocol {
+extension OSCTCPServer.Core.Delegate.ClientConnection: OSCTCPGeneratesClientNotificationsProtocol {
     // note that this is never called because when a remote connection closes, its socket does not fire
     // `socketDidDisconnect(...)` in GCDAsyncSocketDelegate, but we have to implement this due to
     // other protocol requirements

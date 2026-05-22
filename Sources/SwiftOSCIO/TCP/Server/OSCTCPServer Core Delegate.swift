@@ -1,5 +1,5 @@
 //
-//  OSCTCPServer Delegate.swift
+//  OSCTCPServer Core Delegate.swift
 //  SwiftOSC I/O: Cocoa • https://github.com/orchetect/swift-osc-io-cocoa
 //  © 2026 Steffan Andrews • Licensed under MIT License
 //
@@ -9,16 +9,35 @@
 @preconcurrency internal import CocoaAsyncSocket
 internal import SwiftOSCIOInternals
 import Foundation
+import Synchronization
 
-extension OSCTCPServer {
+extension OSCTCPServer.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
+        nonisolated(unsafe)
         weak var oscServer: (any _OSCTCPPacketDispatcherProtocol & OSCTCPGeneratesServerNotificationsProtocol)?
+        
+        /// Internal queue used for synchronizing access to mutable properties.
+        let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.Delegate.syncQueue", target: .global())
+        
         let framingMode: OSCTCPFramingMode
 
         /// Currently connected client sessions.
-        var clients: [OSCTCPClientSessionID: ClientConnection] = [:]
-
+        var clients: [OSCTCPClientSessionID: ClientConnection] {
+            get {
+                syncQueue.sync { _clients }
+            }
+            _modify {
+                var value = syncQueue.sync { _clients }
+                yield &value
+                syncQueue.sync { _clients = value }
+            }
+            set {
+                syncQueue.sync { _clients = newValue }
+            }
+        }
+        nonisolated(unsafe) private var _clients: [OSCTCPClientSessionID: ClientConnection] = [:]
+        
         init(framingMode: OSCTCPFramingMode) {
             self.framingMode = framingMode
         }
@@ -29,9 +48,9 @@ extension OSCTCPServer {
     }
 }
 
-extension OSCTCPServer.Delegate: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPServer.Core.Delegate: Sendable { }
 
-extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
+extension OSCTCPServer.Core.Delegate: GCDAsyncSocketDelegate {
     func newSocketQueueForConnection(fromAddress address: Data, on sock: GCDAsyncSocket) -> dispatch_queue_t? {
         oscServer?.queue
     }
@@ -68,6 +87,9 @@ extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
         oscServer?._dispatch(receivedTCPFramedData: data, on: sock)
     }
 
+    // note that this is NOT called when we initiate a graceful connection closure.
+    // this is called when the remote server closes the connection, and possibly when
+    // the connection drops due to poor network conditions or the server becoming unreachable (?).
     func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: (any Error)?) {
         // remove connection from connections dictionary
 
@@ -113,7 +135,7 @@ extension OSCTCPServer.Delegate: GCDAsyncSocketDelegate {
 
 // MARK: - Methods
 
-extension OSCTCPServer.Delegate {
+extension OSCTCPServer.Core.Delegate {
     /// Close connections for any connected clients and remove them from the list of connected clients.
     func closeClients() {
         for clientID in clients.keys {
@@ -123,14 +145,29 @@ extension OSCTCPServer.Delegate {
 
     /// Close a connection and remove it from the list of connected clients.
     func closeClient(clientID: Int) {
+        guard clients[clientID] != nil,
+              let host = clients[clientID]?.remoteHost,
+              let port = clients[clientID]?.remotePort
+        else { return }
+        
         clients[clientID]?.close()
         clients[clientID] = nil
+        
+        // send notification
+        // (when we close a client connection, the `socketDidDisconnect` method does not fire
+        // so we have to manually generate a notification here.
+        oscServer?.generateDisconnectedNotification(
+            remoteHost: host,
+            remotePort: port,
+            clientID: clientID,
+            error: nil
+        )
     }
 }
 
 // MARK: - Utilities
 
-extension OSCTCPServer.Delegate {
+extension OSCTCPServer.Core.Delegate {
     /// Generate a new client ID that is not currently in use by any connected client(s).
     private func newClientID() -> OSCTCPClientSessionID {
         var clientID: Int = 0

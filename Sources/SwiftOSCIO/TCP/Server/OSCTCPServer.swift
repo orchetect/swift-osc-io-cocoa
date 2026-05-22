@@ -11,6 +11,7 @@ import SwiftOSCIOCore
 
 #if os(watchOS)
 // CocoaAsyncSocket does not support watchOS and will not successfully build, so use no-op stand-in
+@available(*, deprecated, message: "OSC classes are unavailable on watchOS when using the CocoaAsyncSocket network I/O backend.")
 public typealias OSCTCPServer = NoOpOSCTCPServer
 #else
 
@@ -21,6 +22,7 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
     public init(
         port: UInt16?,
         interface: String?,
+        isIPv6Enabled: Bool,
         framingMode: OSCTCPFramingMode,
         queue: DispatchQueue?,
         receiveHandler: OSCPacketHandler?
@@ -28,6 +30,7 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
         core = Core(
             port: port,
             interface: interface,
+            isIPv6Enabled: isIPv6Enabled,
             framingMode: framingMode,
             queue: queue,
             receiveHandler: receiveHandler
@@ -66,6 +69,11 @@ public final class OSCTCPServer: OSCTCPServerProtocol {
 
     public var interface: String? {
         core.interface
+    }
+
+    public var isIPv6Enabled: Bool {
+        get { core.isIPv6Enabled }
+        set { core.isIPv6Enabled = newValue }
     }
 
     public var isStarted: Bool {

@@ -11,6 +11,7 @@ import SwiftOSCIOCore
 
 #if os(watchOS)
 // CocoaAsyncSocket does not support watchOS and will not successfully build, so use no-op stand-in
+@available(*, deprecated, message: "OSC classes are unavailable on watchOS when using the CocoaAsyncSocket network I/O backend.")
 public typealias OSCUDPSocket = NoOpOSCUDPSocket
 #else
 
@@ -24,6 +25,7 @@ public final class OSCUDPSocket: OSCUDPSocketProtocol {
         remotePort: UInt16?,
         interface: String?,
         isIPv4BroadcastEnabled: Bool,
+        isIPv6Enabled: Bool,
         queue: DispatchQueue?,
         receiveHandler: OSCPacketHandler?
     ) {
@@ -33,6 +35,7 @@ public final class OSCUDPSocket: OSCUDPSocketProtocol {
             remotePort: remotePort,
             interface: interface,
             isIPv4BroadcastEnabled: isIPv4BroadcastEnabled,
+            isIPv6Enabled: isIPv6Enabled,
             queue: queue,
             receiveHandler: receiveHandler
         )
@@ -76,6 +79,11 @@ public final class OSCUDPSocket: OSCUDPSocketProtocol {
 
     public var isIPv4BroadcastEnabled: Bool {
         core.isIPv4BroadcastEnabled
+    }
+
+    public var isIPv6Enabled: Bool {
+        get { core.isIPv6Enabled }
+        set { core.isIPv6Enabled = newValue }
     }
 
     public var isStarted: Bool {

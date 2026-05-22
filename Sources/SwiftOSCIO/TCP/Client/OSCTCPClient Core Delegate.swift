@@ -13,6 +13,7 @@ import Foundation
 extension OSCTCPClient.Core {
     /// Internal TCP receiver class so as to not expose `GCDAsyncSocketDelegate` methods as public.
     final class Delegate: NSObject {
+        nonisolated(unsafe)
         weak var oscServer: (any _OSCTCPPacketDispatcherProtocol & OSCTCPGeneratesClientNotificationsProtocol)?
 
         // already implemented by NSObject
@@ -20,7 +21,7 @@ extension OSCTCPClient.Core {
     }
 }
 
-extension OSCTCPClient.Core.Delegate: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPClient.Core.Delegate: Sendable { }
 
 extension OSCTCPClient.Core.Delegate: GCDAsyncSocketDelegate {
     func newSocketQueueForConnection(fromAddress address: Data, on sock: GCDAsyncSocket) -> dispatch_queue_t? {
