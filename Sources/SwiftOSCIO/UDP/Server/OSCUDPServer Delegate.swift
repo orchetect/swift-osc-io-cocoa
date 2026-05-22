@@ -13,6 +13,7 @@ import SwiftOSCCore
 extension OSCUDPServer {
     /// Internal UDP receiver class so as to not expose `GCDAsyncUdpSocketDelegate` methods as public.
     final class Delegate: NSObject {
+        nonisolated(unsafe) 
         weak var oscServer: (any _OSCPacketDispatcherProtocol)?
 
         init(oscServer: (any _OSCPacketDispatcherProtocol)? = nil) {
@@ -20,6 +21,8 @@ extension OSCUDPServer {
         }
     }
 }
+
+extension OSCUDPServer.Delegate: Sendable { }
 
 extension OSCUDPServer.Delegate: GCDAsyncUdpSocketDelegate {
     /// CocoaAsyncSocket receive delegate method implementation.
@@ -53,7 +56,5 @@ extension OSCUDPServer.Delegate: GCDAsyncUdpSocketDelegate {
         oscServer.dispatch(receivedPacket: data, remoteHost: remoteHost, remotePort: remotePort)
     }
 }
-
-extension OSCUDPServer.Delegate: @unchecked Sendable { } // TODO: unchecked
 
 #endif

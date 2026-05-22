@@ -16,27 +16,54 @@ extension OSCTCPClient {
     final class Core {
         typealias Parent = OSCTCPClient
 
+        /// Internal queue used for synchronizing access to mutable properties.
+        let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.Core.syncQueue", target: .global())
+
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
         let queue: DispatchQueue
-        var receiveHandler: OSCPacketHandler?
-        var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
-        var notificationHandler: Parent.NotificationHandlerBlock?
         let remoteHost: String
         let remotePort: UInt16
         let interface: String?
         let framingMode: OSCTCPFramingMode
-
+        
+        var receiveHandler: OSCPacketHandler? {
+            get { syncQueue.sync { _receiveHandler } }
+            set { syncQueue.sync { _receiveHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
+        
+        var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
+            get { syncQueue.sync { _receiveErrorHandler } }
+            set { syncQueue.sync { _receiveErrorHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
+        
+        var notificationHandler: Parent.NotificationHandlerBlock? {
+            get { syncQueue.sync { _notificationHandler } }
+            set { syncQueue.sync { _notificationHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _notificationHandler: Parent.NotificationHandlerBlock?
+        
         var isIPv6Enabled: Bool {
-            didSet {
+            get {
+                syncQueue.sync { _isIPv6Enabled }
+            }
+            set {
+                syncQueue.sync { _isIPv6Enabled = newValue }
                 if isConnected {
                     print("Setting isIPv6Enabled will not have any effect until the TCP client is disconnected and reconnected again.")
                 }
             }
         }
+        nonisolated(unsafe) private var _isIPv6Enabled: Bool
         
-        var isIPv6AddressTranslationToIPv4Enabled: Bool = false
+        var isIPv6AddressTranslationToIPv4Enabled: Bool {
+            get { syncQueue.sync { _isIPv6AddressTranslationToIPv4Enabled } }
+            set { syncQueue.sync { _isIPv6AddressTranslationToIPv4Enabled = newValue } }
+        }
+        nonisolated(unsafe) private var _isIPv6AddressTranslationToIPv4Enabled: Bool = false
         
         init(
             remoteHost: String,
@@ -50,14 +77,14 @@ extension OSCTCPClient {
             self.remoteHost = remoteHost
             self.remotePort = remotePort
             self.interface = interface
-            self.isIPv6Enabled = isIPv6Enabled
+            _isIPv6Enabled = isIPv6Enabled
             self.framingMode = framingMode
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue", target: .global())
             self.queue = queue
-            self.receiveHandler = receiveHandler
+            _receiveHandler = receiveHandler
 
             tcpDelegate = Delegate()
-            tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil)
+            tcpSocket = GCDAsyncSocket(delegate: tcpDelegate, delegateQueue: queue, socketQueue: nil) // do NOT use syncQueue
             tcpDelegate.oscServer = self
         }
 
@@ -67,7 +94,7 @@ extension OSCTCPClient {
     }
 }
 
-extension OSCTCPClient.Core: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPClient.Core: Sendable { }
 
 // MARK: - Lifecycle
 
@@ -169,21 +196,15 @@ extension OSCTCPClient.Core {
     }
 
     func setReceiveHandler(_ handler: OSCPacketHandler?) {
-        queue.sync {
-            self.receiveHandler = handler
-        }
+        receiveHandler = handler
     }
 
     func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
-        queue.sync {
-            self.receiveErrorHandler = handler
-        }
+        receiveErrorHandler = handler
     }
 
     func setNotificationHandler(_ handler: Parent.NotificationHandlerBlock?) {
-        queue.sync {
-            self.notificationHandler = handler
-        }
+        notificationHandler = handler
     }
 }
 

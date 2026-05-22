@@ -14,7 +14,9 @@ import SwiftOSCCore
 extension OSCTCPServer.Delegate {
     /// Internal class encapsulating a remote client connection session accepted by a local ``OSCTCPServer``.
     final class ClientConnection {
+        nonisolated(unsafe)
         weak var delegate: OSCTCPServer.Delegate?
+        
         let tcpDelegate: OSCTCPClient.Core.Delegate
 
         let tcpSocket: GCDAsyncSocket
@@ -47,7 +49,7 @@ extension OSCTCPServer.Delegate {
     }
 }
 
-extension OSCTCPServer.Delegate.ClientConnection: @unchecked Sendable { } // TODO: unchecked
+extension OSCTCPServer.Delegate.ClientConnection: Sendable { }
 
 // MARK: - Lifecycle
 

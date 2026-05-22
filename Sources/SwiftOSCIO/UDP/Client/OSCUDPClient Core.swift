@@ -17,33 +17,56 @@ extension OSCUDPClient {
         private let udpSocket = GCDAsyncUdpSocket()
         private let udpDelegate = Delegate()
 
+        /// Internal queue used for synchronizing access to mutable properties.
+        let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPClient.Core.syncQueue", target: .global())
+        
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-        private var _localPort: UInt16?
+        
+        var preferredLocalPort: UInt16? {
+            get { syncQueue.sync { _preferredLocalPort } }
+            set { syncQueue.sync { _preferredLocalPort = newValue } }
+        }
+        nonisolated(unsafe) private var _preferredLocalPort: UInt16?
+        
+        let interface: String?
 
-        private(set) var interface: String?
-
-        var isPortReuseEnabled: Bool
-
+        var isPortReuseEnabled: Bool {
+            get { syncQueue.sync { _isPortReuseEnabled } }
+            set { syncQueue.sync { _isPortReuseEnabled = newValue } }
+        }
+        nonisolated(unsafe) private var _isPortReuseEnabled: Bool
+        
         var isIPv4BroadcastEnabled: Bool {
-            get { _isIPv4BroadcastEnabled }
+            get {
+                syncQueue.sync { _isIPv4BroadcastEnabled }
+            }
             set {
-                _isIPv4BroadcastEnabled = newValue
+                syncQueue.sync { _isIPv4BroadcastEnabled = newValue }
                 try? udpSocket.enableBroadcast(newValue)
             }
         }
-        private var _isIPv4BroadcastEnabled: Bool
+        nonisolated(unsafe) private var _isIPv4BroadcastEnabled: Bool
 
         var isIPv6Enabled: Bool {
-            didSet {
+            get {
+                syncQueue.sync { _isIPv6Enabled }
+            }
+            set {
+                syncQueue.sync { _isIPv6Enabled = newValue }
                 if isStarted {
                     print("Setting isIPv6Enabled will not have any effect until the UDP client is stopped and started again.")
                 }
             }
         }
+        nonisolated(unsafe) private var _isIPv6Enabled: Bool
 
-        private(set) var isStarted: Bool = false
+        private(set) var isStarted: Bool {
+            get { syncQueue.sync { _isStarted } }
+            set { syncQueue.sync { _isStarted = newValue } }
+        }
+        nonisolated(unsafe) private var _isStarted: Bool = false
 
         init(
             localPort: UInt16?,
@@ -52,13 +75,13 @@ extension OSCUDPClient {
             isIPv4BroadcastEnabled: Bool,
             isIPv6Enabled: Bool
         ) {
-            udpSocket.setDelegate(udpDelegate, delegateQueue: .global())
+            udpSocket.setDelegate(udpDelegate, delegateQueue: .global()) // do NOT use syncQueue
 
-            _localPort = (localPort == nil || localPort == 0) ? nil : localPort
+            _preferredLocalPort = (localPort == nil || localPort == 0) ? nil : localPort
             self.interface = interface
-            self.isPortReuseEnabled = isPortReuseEnabled
+            _isPortReuseEnabled = isPortReuseEnabled
             _isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
-            self.isIPv6Enabled = isIPv6Enabled
+            _isIPv6Enabled = isIPv6Enabled
         }
 
         deinit {
@@ -67,7 +90,7 @@ extension OSCUDPClient {
     }
 }
 
-extension OSCUDPClient.Core: @unchecked Sendable { } // TODO: unchecked
+extension OSCUDPClient.Core: Sendable { }
 
 // MARK: - Lifecycle
 
@@ -86,7 +109,7 @@ extension OSCUDPClient.Core {
 
         do {
             try udpSocket.bind(
-                toPort: _localPort ?? 0, // 0 causes system to assign random open port
+                toPort: preferredLocalPort ?? 0, // 0 causes system to assign random open port
                 interface: interface
             )
         } catch let error as GCDAsyncUdpSocketError

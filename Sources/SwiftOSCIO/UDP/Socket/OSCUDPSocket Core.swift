@@ -16,40 +16,69 @@ extension OSCUDPSocket {
     final class Core {
         typealias Parent = OSCUDPSocket
 
+        /// Internal queue used for synchronizing access to mutable properties.
+        let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPSocket.Core.syncQueue", target: .global())
+        
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Delegate()
         let queue: DispatchQueue
-        var receiveHandler: OSCPacketHandler?
-        var receiveErrorHandler: OSCDecodeErrorHandlerBlock?
+        
+        var receiveHandler: OSCPacketHandler? {
+            get { syncQueue.sync { _receiveHandler } }
+            set { syncQueue.sync { _receiveHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _receiveHandler: OSCPacketHandler?
+        
+        var receiveErrorHandler: OSCDecodeErrorHandlerBlock? {
+            get { syncQueue.sync { _receiveErrorHandler } }
+            set { syncQueue.sync { _receiveErrorHandler = newValue } }
+        }
+        nonisolated(unsafe) private var _receiveErrorHandler: OSCDecodeErrorHandlerBlock?
 
-        var remoteHost: String?
+        var remoteHost: String? {
+            get { syncQueue.sync { _remoteHost } }
+            set { syncQueue.sync { _remoteHost = newValue } }
+        }
+        nonisolated(unsafe) private var _remoteHost: String?
 
         var localPort: UInt16 {
             udpSocket.localPort()
         }
-
-        private var _localPort: UInt16?
+        
+        var preferredLocalPort: UInt16? {
+            get { syncQueue.sync { _preferredLocalPort } }
+            set { syncQueue.sync { _preferredLocalPort = newValue } }
+        }
+        nonisolated(unsafe) private var _preferredLocalPort: UInt16?
 
         var remotePort: UInt16 {
-            get { _remotePort ?? localPort }
-            set { _remotePort = (newValue == 0) ? nil : newValue }
+            get { syncQueue.sync { _remotePort } ?? localPort }
+            set { syncQueue.sync { _remotePort = (newValue == 0) ? nil : newValue } }
         }
+        nonisolated(unsafe) private var _remotePort: UInt16?
 
-        private var _remotePort: UInt16?
-
-        private(set) var interface: String?
+        let interface: String?
 
         let isIPv4BroadcastEnabled: Bool
 
         var isIPv6Enabled: Bool {
-            didSet {
+            get {
+                syncQueue.sync { _isIPv6Enabled }
+            }
+            set {
+                syncQueue.sync { _isIPv6Enabled = newValue }
                 if isStarted {
                     print("Setting isIPv6Enabled will not have any effect until the UDP socket is stopped and started again.")
                 }
             }
         }
-
-        private(set) var isStarted: Bool = false
+        nonisolated(unsafe) private var _isIPv6Enabled: Bool
+        
+        private(set) var isStarted: Bool {
+            get { syncQueue.sync { _isStarted } }
+            set { syncQueue.sync { _isStarted = newValue } }
+        }
+        nonisolated(unsafe) private var _isStarted: Bool = false
 
         init(
             localPort: UInt16?,
@@ -61,15 +90,15 @@ extension OSCUDPSocket {
             queue: DispatchQueue?,
             receiveHandler: OSCPacketHandler?
         ) {
-            self.remoteHost = remoteHost
-            _localPort = (localPort == nil || localPort == 0) ? nil : localPort
+            _remoteHost = remoteHost
+            _preferredLocalPort = (localPort == nil || localPort == 0) ? nil : localPort
             _remotePort = (remotePort == nil || remotePort == 0) ? nil : remotePort
             self.interface = interface
             self.isIPv4BroadcastEnabled = isIPv4BroadcastEnabled
-            self.isIPv6Enabled = isIPv6Enabled
+            _isIPv6Enabled = isIPv6Enabled
             let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPSocket.queue", target: .global())
             self.queue = queue
-            self.receiveHandler = receiveHandler
+            _receiveHandler = receiveHandler
 
             udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: queue, socketQueue: nil)
             udpDelegate.oscServer = self
@@ -81,7 +110,7 @@ extension OSCUDPSocket {
     }
 }
 
-extension OSCUDPSocket.Core: @unchecked Sendable { }
+extension OSCUDPSocket.Core: Sendable { }
 
 // MARK: - Lifecycle
 
@@ -97,7 +126,7 @@ extension OSCUDPSocket.Core {
         
         do {
             try udpSocket.bind(
-                toPort: _localPort ?? 0, // 0 causes system to assign random open port
+                toPort: preferredLocalPort ?? 0, // 0 causes system to assign random open port
                 interface: interface
             )
         } catch let error as GCDAsyncUdpSocketError
@@ -156,15 +185,11 @@ extension OSCUDPSocket.Core: _OSCPacketDispatcherProtocol {
 
 extension OSCUDPSocket.Core {
     func setReceiveHandler(_ handler: OSCPacketHandler?) {
-        queue.sync {
-            self.receiveHandler = handler
-        }
+        receiveHandler = handler
     }
 
     func setReceiveErrorHandler(_ handler: OSCDecodeErrorHandlerBlock?) {
-        queue.sync {
-            self.receiveErrorHandler = handler
-        }
+        receiveErrorHandler = handler
     }
 }
 
