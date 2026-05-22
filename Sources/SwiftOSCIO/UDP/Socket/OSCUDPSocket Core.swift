@@ -37,7 +37,12 @@ extension OSCUDPSocket {
 
         var remoteHost: String? {
             get { syncQueue.sync { _remoteHost } }
-            set { syncQueue.sync { _remoteHost = newValue } }
+            set {
+                syncQueue.sync {
+                    // convert empty string to nil
+                    _remoteHost = (newValue?.isEmpty == true) ? nil : newValue
+                }
+            }
         }
         nonisolated(unsafe) private var _remoteHost: String?
 
@@ -90,7 +95,7 @@ extension OSCUDPSocket {
             queue: DispatchQueue?,
             receiveHandler: OSCPacketHandler?
         ) {
-            _remoteHost = remoteHost
+            _remoteHost = (remoteHost?.isEmpty == true) ? nil : remoteHost // convert empty string to nil
             _preferredLocalPort = (localPort == nil || localPort == 0) ? nil : localPort
             _remotePort = (remotePort == nil || remotePort == 0) ? nil : remotePort
             self.interface = interface
