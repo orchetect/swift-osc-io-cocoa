@@ -130,11 +130,23 @@ extension OSCUDPSocket.Core {
     func start() throws {
         guard !isStarted else { return }
 
-        try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
-
+        stop()
+        
         // by default, if interface is passed as `nil`, CocoaAsyncSocket will bind to the "any" wildcard.
         // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
         let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
+
+        try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
+
+        if isIPv6Enabled {
+            // by default, both IPv4 and IPv6 are enabled
+            udpSocket.setPreferIPv4() // still prefer v4 when possible
+            udpSocket.setIPv6Enabled(true)
+        } else {
+            // by default, both IPv4 and IPv6 are enabled
+            udpSocket.setPreferIPv4()
+            udpSocket.setIPv6Enabled(false)
+        }
 
         do {
             try udpSocket.bind(
