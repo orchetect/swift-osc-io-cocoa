@@ -117,6 +117,8 @@ extension OSCUDPClient.Core {
         // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
         let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
 
+        let port = preferredLocalPort ?? 0 // 0 causes system to assign random open port
+        
         try udpSocket.enableReusePort(isPortReuseEnabled)
         try udpSocket.enableBroadcast(isIPv4BroadcastEnabled)
 
@@ -133,7 +135,7 @@ extension OSCUDPClient.Core {
 
         do {
             try udpSocket.bind(
-                toPort: preferredLocalPort ?? 0, // 0 causes system to assign random open port
+                toPort: port,
                 interface: interface
             )
         } catch let error as GCDAsyncUdpSocketError

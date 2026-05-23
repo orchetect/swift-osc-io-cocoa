@@ -119,6 +119,8 @@ extension OSCTCPServer.Core {
         // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
         let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
 
+        let port = preferredLocalPort ?? 0 // 0 causes system to assign random open port
+
         // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6 unless told otherwise
         if isIPv6Enabled {
             // by default, both IPv4 and IPv6 are enabled
@@ -133,7 +135,7 @@ extension OSCTCPServer.Core {
         do {
             try tcpSocket.accept(
                 onInterface: interface,
-                port: preferredLocalPort ?? 0 // 0 causes system to assign random open port
+                port: port
             )
         } catch let error as GCDAsyncSocketError
             where error.code == .badParamError
