@@ -123,10 +123,9 @@ extension OSCTCPClient.Core {
 
         let remoteHost: String
         if isIPv6Enabled {
-            // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6
             remoteHost = self.remoteHost
         } else {
-            if isIPv6AddressTranslationToIPv4Enabled {
+            if isIPv6AddressTranslationToIPv4Enabled { // TODO: experimental feature that may be removed in future
                 // translate an IPv6 host/IP to an IPv4 if possible.
                 let proposedRemoteHost = try IPUtils.ipAddressUsingReverseLookup(forHostnameOrIPAddress: self.remoteHost, family: .ipv4)
                 guard let proposedRemoteHost else {
@@ -144,6 +143,7 @@ extension OSCTCPClient.Core {
         // but we can't pass the actual string to the `interface` parameter of bind() so we need to translate it to `nil`.
         let interface = (interface == "0.0.0.0" || interface == "::") ? nil : interface
 
+        // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6 unless told otherwise
         if isIPv6Enabled {
             // by default, both IPv4 and IPv6 are enabled
             tcpSocket.isIPv4PreferredOverIPv6 = true // still prefer v4 when possible

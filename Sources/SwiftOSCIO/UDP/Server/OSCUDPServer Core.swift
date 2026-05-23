@@ -123,6 +123,7 @@ extension OSCUDPServer.Core {
 
         try udpSocket.enableReusePort(isPortReuseEnabled)
 
+        // CocoaAsyncSocket operates in an egalitarian mode by default that supports both IPv4 and IPv6 unless told otherwise
         if isIPv6Enabled {
             // by default, both IPv4 and IPv6 are enabled
             udpSocket.setPreferIPv4() // still prefer v4 when possible
