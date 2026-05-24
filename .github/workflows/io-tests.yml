@@ -96,9 +96,9 @@ jobs:
     name: I/O Tests
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         target: [iOS, tvOS, visionOS] # skip watchOS
-    fail-fast: false
     timeout-minutes: 60
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
