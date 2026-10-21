@@ -19,9 +19,11 @@ extension OSCUDPServer {
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.Core.syncQueue", target: .global())
 
+        let queue: DispatchQueue
+        private let queueKey = DispatchSpecificKey<Void>()
+
         let udpSocket: GCDAsyncUdpSocket
         let udpDelegate = Parent.Core.Delegate()
-        let queue: DispatchQueue
 
         var receiveHandler: OSCPacketHandler? {
             get { syncQueue.sync { _receiveHandler } }
@@ -94,10 +96,15 @@ extension OSCUDPServer {
             self.interface = interface
             _isPortReuseEnabled = isPortReuseEnabled
             _isIPv6Enabled = isIPv6Enabled
-            self.queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCUDPServer.queue", target: .global())
+            let queue = queue ?? DispatchQueue(
+                label: "com.orchetect.SwiftOSC.OSCUDPServer.queue",
+                target: .global() // Note: Do NOT use syncQueue!
+            )
+            self.queue = queue
+            queue.setSpecific(key: queueKey, value: ())
             _receiveHandler = receiveHandler
 
-            udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: self.queue, socketQueue: nil) // do NOT use syncQueue
+            udpSocket = GCDAsyncUdpSocket(delegate: udpDelegate, delegateQueue: self.queue, socketQueue: nil)
             udpDelegate.oscServer = self
         }
 
@@ -162,6 +169,18 @@ extension OSCUDPServer.Core {
         udpSocket.close()
 
         isStarted = false
+    }
+}
+
+// MARK: - Queue Utilities
+
+extension OSCUDPServer.Core {
+    private func syncOnQueue<T>(_ operation: () throws -> T) rethrows -> T {
+        if DispatchQueue.getSpecific(key: queueKey) != nil {
+            try operation()
+        } else {
+            try queue.sync(execute: operation)
+        }
     }
 }
 

@@ -19,10 +19,12 @@ extension OSCTCPClient {
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.Core.syncQueue", target: .global())
 
+        let queue: DispatchQueue
+        private let queueKey = DispatchSpecificKey<Void>()
+
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Delegate
         let clientID: OSCTCPClientSessionID = 0
-        let queue: DispatchQueue
 
         var localHost: String? {
             isConnected ? tcpSocket.localHost : nil
@@ -96,8 +98,12 @@ extension OSCTCPClient {
             self.interface = interface
             _isIPv6Enabled = isIPv6Enabled
             self.framingMode = framingMode
-            let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPClient.queue", target: .global())
+            let queue = queue ?? DispatchQueue(
+                label: "com.orchetect.SwiftOSC.OSCTCPClient.queue",
+                target: .global() // Note: Do NOT use syncQueue!
+            )
             self.queue = queue
+            queue.setSpecific(key: queueKey, value: ())
             _receiveHandler = receiveHandler
 
             tcpDelegate = Delegate()
@@ -176,6 +182,18 @@ extension OSCTCPClient.Core {
 
     func close() {
         tcpSocket.disconnectAfterWriting()
+    }
+}
+
+// MARK: - Queue Utilities
+
+extension OSCTCPClient.Core {
+    private func syncOnQueue<T>(_ operation: () throws -> T) rethrows -> T {
+        if DispatchQueue.getSpecific(key: queueKey) != nil {
+            try operation()
+        } else {
+            try queue.sync(execute: operation)
+        }
     }
 }
 
