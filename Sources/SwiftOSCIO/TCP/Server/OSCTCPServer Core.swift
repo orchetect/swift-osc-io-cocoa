@@ -19,9 +19,11 @@ extension OSCTCPServer {
         /// Internal queue used for synchronizing access to mutable properties.
         let syncQueue = DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.Core.syncQueue", target: .global())
 
+        let queue: DispatchQueue
+        private let queueKey = DispatchSpecificKey<Void>()
+
         let tcpSocket: GCDAsyncSocket
         let tcpDelegate: Parent.Core.Delegate
-        let queue: DispatchQueue
 
         var receiveHandler: OSCPacketHandler? {
             get { syncQueue.sync { _receiveHandler } }
@@ -92,7 +94,11 @@ extension OSCTCPServer {
             self.interface = interface
             _isIPv6Enabled = isIPv6Enabled
             self.framingMode = framingMode
-            let queue = queue ?? DispatchQueue(label: "com.orchetect.SwiftOSC.OSCTCPServer.queue", target: .global())
+            let queue = queue ?? DispatchQueue(
+                label: "com.orchetect.SwiftOSC.OSCTCPServer.queue",
+                target: .global() // Note: Do NOT use syncQueue!
+            )
+            queue.setSpecific(key: queueKey, value: ())
             self.queue = queue
             _receiveHandler = receiveHandler
 
@@ -160,6 +166,18 @@ extension OSCTCPServer.Core {
         tcpSocket.disconnectAfterWriting()
 
         isStarted = false
+    }
+}
+
+// MARK: - Queue Utilities
+
+extension OSCTCPServer.Core {
+    private func syncOnQueue<T>(_ operation: () throws -> T) rethrows -> T {
+        if DispatchQueue.getSpecific(key: queueKey) != nil {
+            try operation()
+        } else {
+            try queue.sync(execute: operation)
+        }
     }
 }
 
